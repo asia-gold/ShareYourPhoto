@@ -6,6 +6,8 @@
     
     <dimen name="margin_top">15dp</dimen>
     <dimen name="margin_left">5dp</dimen>
+    <dimen name="margin_right">5dp</dimen>
+    <dimen name="margin_bottom">10dp</dimen>
     
     <dimen name="tv_item_address">18sp</dimen>
     <dimen name="tv_item_subject">16sp</dimen>
@@ -18,6 +20,6 @@
     
     <dimen name="tv_share">16sp</dimen>
     
-    
+    <dimen name="tv_message">16sp</dimen>
 
 </resources>

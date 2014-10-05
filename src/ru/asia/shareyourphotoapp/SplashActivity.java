@@ -1,5 +1,8 @@
 package ru.asia.shareyourphotoapp;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,22 +16,18 @@ public class SplashActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 		
-		Thread splashThread = new Thread() {
+		Timer timer = new Timer();
+		TimerTask timerTask = new TimerTask() {
 			
 			@Override
 			public void run() {
-				try {
-					sleep(SPLASH_TIME);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(intent);
-					finish();
-				}				 
+				Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+				finish();
+				
 			}
 		};
-		splashThread.start();
+		timer.schedule(timerTask, SPLASH_TIME);
 	}
 }

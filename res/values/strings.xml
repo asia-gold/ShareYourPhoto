@@ -18,5 +18,15 @@
     <string name="action_add_new_message">Add new message</string>
     
     <string name="no_email">Please, fill the Email field.</string>
+    
+    <string name="btn_yes">Yes</string>
+    <string name="btn_no">No</string>
+    
+    <string name="remove_dialog">Are you sure you want to remove this message?</string>
+    <string name="remove_all_dialog">Are you sure you want to remove all messages?</string>
+    
+    <string name="btn_camera">Camera</string>
+    <string name="btn_gallery">Photo Gallery</string>
+    <string name="btn_cancel">Cancel</string>
 
 </resources>

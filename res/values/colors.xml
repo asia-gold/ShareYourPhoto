@@ -2,5 +2,6 @@
 <resources>
     <color name="screen_color">#35414c</color>
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
     
 </resources>

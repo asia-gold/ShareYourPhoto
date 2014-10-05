@@ -3,7 +3,9 @@ package ru.asia.shareyourphotoapp;
 import java.util.ArrayList;
 
 import ru.asia.shareyourphotoapp.model.Draft;
+import android.app.Dialog;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -15,14 +17,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
 
+	private Context context = this;
 	private ListView lvDrafts;
+	private Button btnRemoveAll;
 	private ArrayList<Draft> data;
 	// private DraftsAdapter adapter;
 
@@ -34,38 +42,104 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 
 		lvDrafts = (ListView) findViewById(R.id.lvDrafts);
+		btnRemoveAll = (Button) findViewById(R.id.btnRemoveAll);
 
 		fillListView();
-		
+
 		lvDrafts.setAdapter(adapter);
 		lvDrafts.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				
-				Cursor cursor = (Cursor)lvDrafts.getItemAtPosition(position);
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				Cursor cursor = (Cursor) lvDrafts.getItemAtPosition(position);
 				int itemId = cursor.getInt(cursor
 						.getColumnIndexOrThrow(DraftDBHelper.COLUMN_ID));
-				Log.e("-------", "item id " + itemId );
-				Intent intent = new Intent(MainActivity.this, ShareActivity.class);
-			    Uri draftUri = Uri.parse(DraftsProvider.CONTENT_URI + "/" + itemId);
-			    intent.putExtra(DraftsProvider.DRAFT_CONTENT_ITEM_TYPE, draftUri);
-			    startActivity(intent);
+				Log.e("-------", "item id " + itemId);
+				Intent intent = new Intent(MainActivity.this,
+						ShareActivity.class);
+				Uri draftUri = Uri.parse(DraftsProvider.CONTENT_URI + "/"
+						+ itemId);
+				intent.putExtra(DraftsProvider.DRAFT_CONTENT_ITEM_TYPE,
+						draftUri);
+				startActivity(intent);
 			}
 		});
+		
+		lvDrafts.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-//		data = new ArrayList<>();
-//		Draft d1 = new Draft("emailaddress@mail.com", "Me");
-//		Draft d2 = new Draft("emailaddress2@mail.com", "Iren");
-//		Draft d3 = new Draft("emailaddres32@mail.com", "Iren11");
-//
-//		data.add(d1);
-//		data.add(d2);
-//		data.add(d3);
-//
-//		adapter = new DraftsAdapter(this, data);
-//		lvDrafts.setAdapter(adapter);
+			@Override
+			public boolean onItemLongClick(AdapterView<?>parent, View view,
+					int position, long id) {
+				final Dialog removeItemDialog = new Dialog(context, R.style.CustomDialogTheme);
+				removeItemDialog.setContentView(R.layout.remove_dialog);
+				TextView tvMessage = (TextView) removeItemDialog
+						.findViewById(R.id.tvMessege);
+				Button btnNo = (Button) removeItemDialog.findViewById(R.id.btnNo);
+				Button btnYes = (Button) removeItemDialog.findViewById(R.id.btnYes);
+
+				tvMessage.setText(getResources().getString(
+						R.string.remove_dialog));
+
+				btnNo.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						removeItemDialog.dismiss();
+					}
+				});
+
+				btnYes.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View view) {
+						context.getContentResolver().delete(
+								DraftsProvider.CONTENT_URI, null, null);
+
+					}
+				});
+
+				removeItemDialog.show();
+				return false;
+			}
+			
+		});
+
+		btnRemoveAll.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View view) {
+				// custom dialog
+				final Dialog removeAllDialog = new Dialog(context, R.style.CustomDialogTheme);
+				removeAllDialog.setContentView(R.layout.remove_dialog);
+				TextView tvMessage = (TextView) removeAllDialog
+						.findViewById(R.id.tvMessege);
+				Button btnNo = (Button) removeAllDialog.findViewById(R.id.btnNo);
+				Button btnYes = (Button) removeAllDialog.findViewById(R.id.btnYes);
+
+				tvMessage.setText(getResources().getString(
+						R.string.remove_all_dialog));
+
+				btnNo.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						removeAllDialog.dismiss();
+					}
+				});
+
+				btnYes.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View view) {
+						context.getContentResolver().delete(
+								DraftsProvider.CONTENT_URI, null, null);
+
+					}
+				});
+
+				removeAllDialog.show();
+			}
+		});
 	}
 
 	@Override
@@ -115,7 +189,8 @@ public class MainActivity extends ActionBarActivity {
 				adapter.swapCursor(null);
 			}
 		});
-		
-		adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to, 0);
+
+		adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to,
+				0);
 	}
 }
