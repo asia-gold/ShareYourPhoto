@@ -1,16 +1,23 @@
 package ru.asia.shareyourphotoapp.model;
 
-import android.media.Image;
 
 public class Draft {
 	
-	Image photo;
+	long id;
+	byte[] photo;
 	String email;
 	String subject;
+	String body;
 	
-	public Draft(String email, String subject) {
-		this.email = email;
-		this.subject = subject;
+	public Draft() {
+	}
+	
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	public void setPhoto(byte[] photo) {
+		this.photo = photo;
 	}
 	
 	public void setEmail(String email) {
@@ -21,12 +28,28 @@ public class Draft {
 		this.subject = subject;
 	}
 	
+	public void setBody(String body) {
+		this.body = body;
+	}
+	
+	public long getId() {
+		return id;
+	}
+	
+	public byte[] getPhoto() {
+		return photo;
+	}
+	
 	public String getEmail() {
 		return email;
 	}
 	
 	public String getSubject() {
 		return subject;
+	}
+	
+	public String getBody() {
+		return body;
 	}
 
 }

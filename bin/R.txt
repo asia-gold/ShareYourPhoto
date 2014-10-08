@@ -249,9 +249,10 @@ int drawable abc_textfield_searchview_holo_dark 0x7f020053
 int drawable abc_textfield_searchview_holo_light 0x7f020054
 int drawable abc_textfield_searchview_right_holo_dark 0x7f020055
 int drawable abc_textfield_searchview_right_holo_light 0x7f020056
-int drawable camera 0x7f020057
-int drawable ic_action_new 0x7f020058
-int drawable ic_launcher 0x7f020059
+int drawable button_add_new_message 0x7f020057
+int drawable camera 0x7f020058
+int drawable ic_action_new 0x7f020059
+int drawable ic_launcher 0x7f02005a
 int id LinearLayout1 0x7f05003e
 int id action_add_new_message 0x7f05004d
 int id action_bar 0x7f05001c

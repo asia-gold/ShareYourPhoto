@@ -32,10 +32,10 @@ public class MainActivity extends ActionBarActivity {
 	private ListView lvDrafts;
 	private Button btnRemoveAll;
 	private ArrayList<Draft> data;
-	// private DraftsAdapter adapter;
-
-	private SimpleCursorAdapter adapter;
-
+	private DraftsAdapter adapter;
+	
+	Draft deleteDraft;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,8 +43,9 @@ public class MainActivity extends ActionBarActivity {
 
 		lvDrafts = (ListView) findViewById(R.id.lvDrafts);
 		btnRemoveAll = (Button) findViewById(R.id.btnRemoveAll);
-
-		fillListView();
+		
+		data = ShareYourPhotoApplication.getDataSource().getAllDrafts();
+		adapter = new DraftsAdapter(this, data);
 
 		lvDrafts.setAdapter(adapter);
 		lvDrafts.setOnItemClickListener(new OnItemClickListener() {
@@ -53,16 +54,13 @@ public class MainActivity extends ActionBarActivity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
-				Cursor cursor = (Cursor) lvDrafts.getItemAtPosition(position);
-				int itemId = cursor.getInt(cursor
-						.getColumnIndexOrThrow(DraftDBHelper.COLUMN_ID));
+				Draft draft = (Draft) lvDrafts.getAdapter().getItem(position);
+				long itemId = draft.getId();
 				Log.e("-------", "item id " + itemId);
+				
 				Intent intent = new Intent(MainActivity.this,
 						ShareActivity.class);
-				Uri draftUri = Uri.parse(DraftsProvider.CONTENT_URI + "/"
-						+ itemId);
-				intent.putExtra(DraftsProvider.DRAFT_CONTENT_ITEM_TYPE,
-						draftUri);
+				intent.putExtra("idDraft", itemId);
 				startActivity(intent);
 			}
 		});
@@ -72,6 +70,9 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public boolean onItemLongClick(AdapterView<?>parent, View view,
 					int position, long id) {
+				
+				deleteDraft = (Draft) lvDrafts.getAdapter().getItem(position);
+				
 				final Dialog removeItemDialog = new Dialog(context, R.style.CustomDialogTheme);
 				removeItemDialog.setContentView(R.layout.remove_dialog);
 				TextView tvMessage = (TextView) removeItemDialog
@@ -80,7 +81,7 @@ public class MainActivity extends ActionBarActivity {
 				Button btnYes = (Button) removeItemDialog.findViewById(R.id.btnYes);
 
 				tvMessage.setText(getResources().getString(
-						R.string.remove_dialog));
+						R.string.remove_dialog));				
 
 				btnNo.setOnClickListener(new OnClickListener() {
 					@Override
@@ -92,10 +93,8 @@ public class MainActivity extends ActionBarActivity {
 				btnYes.setOnClickListener(new OnClickListener() {
 
 					@Override
-					public void onClick(View view) {
-						context.getContentResolver().delete(
-								DraftsProvider.CONTENT_URI, null, null);
-
+					public void onClick(View view) {						
+						ShareYourPhotoApplication.getDataSource().deleteDraft(deleteDraft);
 					}
 				});
 
@@ -131,15 +130,19 @@ public class MainActivity extends ActionBarActivity {
 
 					@Override
 					public void onClick(View view) {
-						context.getContentResolver().delete(
-								DraftsProvider.CONTENT_URI, null, null);
-
+						ShareYourPhotoApplication.getDataSource().deleteAllDrafts();
 					}
 				});
 
 				removeAllDialog.show();
 			}
 		});
+	}
+	
+	@Override
+	protected void onResume() {
+		data = ShareYourPhotoApplication.getDataSource().getAllDrafts();
+		super.onResume();
 	}
 
 	@Override
@@ -161,36 +164,36 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void fillListView() {
-		String[] from = new String[] { DraftDBHelper.COLUMN_EMAIL,
-				DraftDBHelper.COLUMN_SUBJECT };
-		int[] to = new int[] { R.id.tvItemAddress, R.id.tvItemSubject };
-
-		getLoaderManager().initLoader(0, null, new LoaderCallbacks<Cursor>() {
-
-			@Override
-			public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-				String[] projection = { DraftDBHelper.COLUMN_ID,
-						DraftDBHelper.COLUMN_EMAIL,
-						DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
-				CursorLoader cursorLoader = new CursorLoader(MainActivity.this,
-						DraftsProvider.CONTENT_URI, projection, null, null,
-						null);
-				return cursorLoader;
-			}
-
-			@Override
-			public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-				adapter.swapCursor(data);
-			}
-
-			@Override
-			public void onLoaderReset(Loader<Cursor> loader) {
-				adapter.swapCursor(null);
-			}
-		});
-
-		adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to,
-				0);
-	}
+//	private void fillListView() {
+//		String[] from = new String[] { DraftDBHelper.COLUMN_EMAIL,
+//				DraftDBHelper.COLUMN_SUBJECT };
+//		int[] to = new int[] { R.id.tvItemAddress, R.id.tvItemSubject };
+//
+//		getLoaderManager().initLoader(0, null, new LoaderCallbacks<Cursor>() {
+//
+//			@Override
+//			public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+//				String[] projection = { DraftDBHelper.COLUMN_ID,
+//						DraftDBHelper.COLUMN_EMAIL,
+//						DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
+//				CursorLoader cursorLoader = new CursorLoader(MainActivity.this,
+//						DraftsProvider.CONTENT_URI, projection, null, null,
+//						null);
+//				return cursorLoader;
+//			}
+//
+//			@Override
+//			public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+//				adapter.swapCursor(data);
+//			}
+//
+//			@Override
+//			public void onLoaderReset(Loader<Cursor> loader) {
+//				adapter.swapCursor(null);
+//			}
+//		});
+//
+//		adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to,
+//				0);
+//	}
 }

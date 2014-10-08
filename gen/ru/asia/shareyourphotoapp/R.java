@@ -1092,9 +1092,10 @@ containing a value of this type.
         public static final int abc_textfield_searchview_holo_light=0x7f020054;
         public static final int abc_textfield_searchview_right_holo_dark=0x7f020055;
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
-        public static final int camera=0x7f020057;
-        public static final int ic_action_new=0x7f020058;
-        public static final int ic_launcher=0x7f020059;
+        public static final int button_add_new_message=0x7f020057;
+        public static final int camera=0x7f020058;
+        public static final int ic_action_new=0x7f020059;
+        public static final int ic_launcher=0x7f02005a;
     }
     public static final class id {
         public static final int LinearLayout1=0x7f05003e;

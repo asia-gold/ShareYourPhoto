@@ -1,17 +1,19 @@
 package ru.asia.shareyourphotoapp;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ru.asia.shareyourphotoapp.model.Draft;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,7 +28,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class ShareActivity extends ActionBarActivity {
@@ -42,7 +43,6 @@ public class ShareActivity extends ActionBarActivity {
 	private Button btnShare;
 
 	private String currentPhotoPath;
-	private Uri draftUri;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +55,17 @@ public class ShareActivity extends ActionBarActivity {
 		etBody = (EditText) findViewById(R.id.etBody);
 		btnShare = (Button) findViewById(R.id.btnShare);
 
-		Bundle extras = getIntent().getExtras();
-
-		// // check from the saved Instance
-		// draftUri = (savedInstanceState == null) ? null : (Uri)
-		// savedInstanceState
-		// .getParcelable(DraftsProvider.DRAFT_CONTENT_ITEM_TYPE);
-
-		if (extras != null) {
-			draftUri = extras
-					.getParcelable(DraftsProvider.DRAFT_CONTENT_ITEM_TYPE);
+		long id = getIntent().getLongExtra("idDraft", 0);
+		
+		if (id != 0) {
+			Draft editDraft = ShareYourPhotoApplication.getDataSource().getDraft(id);
+			byte[] photoArray = editDraft.getPhoto();
+			btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(
+					photoArray, 0, photoArray.length));
+			etEmail.setText(editDraft.getEmail());
+			etSubject.setText(editDraft.getSubject());
+			etBody.setText(editDraft.getBody());
 		}
-		fillData(draftUri);
 
 		btnAddPhoto.setOnClickListener(new OnClickListener() {
 
@@ -162,28 +161,35 @@ public class ShareActivity extends ActionBarActivity {
 		}
 	}
 
-	private void fillData(Uri uri) {
-		if (uri != null) {
-			Log.e("----------", "fillData uri " + uri);
-			String[] projection = { DraftDBHelper.COLUMN_EMAIL,
-					DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
-			Cursor cursor = getContentResolver().query(uri, projection, null,
-					null, null);
-			Log.e("----------",
-					"cursor fill data "
-							+ cursor.getString(cursor
-									.getColumnIndex(DraftDBHelper.COLUMN_EMAIL)));
-			etEmail.setText(cursor.getString(cursor
-					.getColumnIndexOrThrow(DraftDBHelper.COLUMN_EMAIL)));
-			etSubject.setText(cursor.getString(cursor
-					.getColumnIndexOrThrow(DraftDBHelper.COLUMN_SUBJECT)));
-			etBody.setText(cursor.getString(cursor
-					.getColumnIndexOrThrow(DraftDBHelper.COLUMN_BODY)));
-			cursor.close();
-		}
+	private void fillData() {
+		
+//		if (uri != null) {
+//			Log.e("----------", "fillData uri " + uri);
+//			String[] projection = { DraftDBHelper.COLUMN_EMAIL,
+//					DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
+//			Cursor cursor = getContentResolver().query(uri, projection, null,
+//					null, null);
+//			Log.e("----------",
+//					"cursor fill data "
+//							+ cursor.getString(cursor
+//									.getColumnIndex(DraftDBHelper.COLUMN_EMAIL)));
+//			etEmail.setText(cursor.getString(cursor
+//					.getColumnIndexOrThrow(DraftDBHelper.COLUMN_EMAIL)));
+//			etSubject.setText(cursor.getString(cursor
+//					.getColumnIndexOrThrow(DraftDBHelper.COLUMN_SUBJECT)));
+//			etBody.setText(cursor.getString(cursor
+//					.getColumnIndexOrThrow(DraftDBHelper.COLUMN_BODY)));
+//			cursor.close();
+		//}
 	}
 
 	private void saveData() {
+		
+		Bitmap image = ((BitmapDrawable) btnAddPhoto.getDrawable())
+				.getBitmap();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		image.compress(Bitmap.CompressFormat.PNG, 0, bos);
+		byte[] photoArray = bos.toByteArray();
 		String email = etEmail.getText().toString();
 		String subject = etSubject.getText().toString();
 		String body = etBody.getText().toString();
@@ -191,20 +197,9 @@ public class ShareActivity extends ActionBarActivity {
 		if (email.length() == 0) {
 			return;
 		}
-
-		ContentValues values = new ContentValues();
-		values.put(DraftDBHelper.COLUMN_EMAIL, email);
-		values.put(DraftDBHelper.COLUMN_SUBJECT, subject);
-		values.put(DraftDBHelper.COLUMN_BODY, body);
-
-		if (draftUri == null) {
-			// New draft
-			draftUri = getContentResolver().insert(DraftsProvider.CONTENT_URI,
-					values);
-		} else {
-			// Update draft
-			getContentResolver().update(draftUri, values, null, null);
-		}
+		
+		long id = ShareYourPhotoApplication.getDataSource().addContact(photoArray, 
+				email, subject, body);
 	}
 	
 	private void takePhotoByCamera() {
