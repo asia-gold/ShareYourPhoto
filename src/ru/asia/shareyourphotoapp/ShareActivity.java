@@ -34,6 +34,8 @@ public class ShareActivity extends ActionBarActivity {
 
 	private static final int REQUEST_IMAGE_CAPTURE = 1;
 	private static final int REQUEST_IMAGE_SELECT = 2;
+	
+	private static final int REQUEST_EMAIL_RETURN = 3;
 
 	private Context context = this;
 	private ImageButton btnAddPhoto;
@@ -43,6 +45,7 @@ public class ShareActivity extends ActionBarActivity {
 	private Button btnShare;
 
 	private String currentPhotoPath;
+	private String photoFilePath;
 	long idFromIntent;
 
 	@Override
@@ -55,19 +58,26 @@ public class ShareActivity extends ActionBarActivity {
 		etSubject = (EditText) findViewById(R.id.etSubject);
 		etBody = (EditText) findViewById(R.id.etBody);
 		btnShare = (Button) findViewById(R.id.btnShare);
+		
+		if (savedInstanceState == null) {
+			idFromIntent = getIntent().getLongExtra("idDraft", 0);
 
-		idFromIntent = getIntent().getLongExtra("idDraft", 0);
-
-		if (idFromIntent != 0) {
-			Draft editDraft = ShareYourPhotoApplication.getDataSource()
-					.getDraft(idFromIntent);
-			byte[] photoArray = editDraft.getPhoto();
-			btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(
-					photoArray, 0, photoArray.length));
-			etEmail.setText(editDraft.getEmail());
-			etSubject.setText(editDraft.getSubject());
-			etBody.setText(editDraft.getBody());
+			if (idFromIntent != 0) {
+				fillData();
+			}
+		} else {
+			byte[] savedPhotoArray = savedInstanceState.getByteArray("btnAddPhoto");
+			String savedEmail = savedInstanceState.getString("etEmail");
+			String savedSubject = savedInstanceState.getString("etSubject");
+			String savedBody = savedInstanceState.getString("etBody");
+			
+			btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(savedPhotoArray, 0, savedPhotoArray.length));
+			etEmail.setText(savedEmail);
+			etSubject.setText(savedSubject);
+			etBody.setText(savedBody);
 		}
+
+		
 
 		btnAddPhoto.setOnClickListener(new OnClickListener() {
 
@@ -129,6 +139,16 @@ public class ShareActivity extends ActionBarActivity {
 			}
 		});
 	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putByteArray("btnAddPhoto", getByteArrayFromImageButton());
+		outState.putString("etEmail", etEmail.getText().toString());
+		outState.putString("etSubject", etSubject.getText().toString());
+		outState.putString("etBody", etBody.getText().toString());
+		
+		super.onSaveInstanceState(outState);
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,6 +171,7 @@ public class ShareActivity extends ActionBarActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
 		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_CAPTURE
 				&& currentPhotoPath != null) {
 			setPic();
@@ -159,52 +180,54 @@ public class ShareActivity extends ActionBarActivity {
 		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_SELECT) {
 			Uri selectedImageUri = data.getData();
 			currentPhotoPath = getPath(selectedImageUri);
+			photoFilePath = currentPhotoPath;
+			Log.e("----------------", "onActivityResult getPath: " + getPath(selectedImageUri));
 			setPic();
+		}
+		if (resultCode == RESULT_OK && resultCode == REQUEST_EMAIL_RETURN) {
+			Intent intent = new Intent(this, ShareActivity.class);
+			startActivity(intent);
+			//finish();
 		}
 	}
 
 	private void fillData() {
-
-		// if (uri != null) {
-		// Log.e("----------", "fillData uri " + uri);
-		// String[] projection = { DraftDBHelper.COLUMN_EMAIL,
-		// DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
-		// Cursor cursor = getContentResolver().query(uri, projection, null,
-		// null, null);
-		// Log.e("----------",
-		// "cursor fill data "
-		// + cursor.getString(cursor
-		// .getColumnIndex(DraftDBHelper.COLUMN_EMAIL)));
-		// etEmail.setText(cursor.getString(cursor
-		// .getColumnIndexOrThrow(DraftDBHelper.COLUMN_EMAIL)));
-		// etSubject.setText(cursor.getString(cursor
-		// .getColumnIndexOrThrow(DraftDBHelper.COLUMN_SUBJECT)));
-		// etBody.setText(cursor.getString(cursor
-		// .getColumnIndexOrThrow(DraftDBHelper.COLUMN_BODY)));
-		// cursor.close();
-		// }
+		
+		Draft editDraft = ShareYourPhotoApplication.getDataSource()
+				.getDraft(idFromIntent);
+		byte[] photoArray = editDraft.getPhoto();
+		btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(
+				photoArray, 0, photoArray.length));
+		etEmail.setText(editDraft.getEmail());
+		etSubject.setText(editDraft.getSubject());
+		etBody.setText(editDraft.getBody());
 	}
 
 	private void saveData() {
-
-		Bitmap image = ((BitmapDrawable) btnAddPhoto.getDrawable()).getBitmap();
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		image.compress(Bitmap.CompressFormat.PNG, 0, bos);
-		byte[] photoArray = bos.toByteArray();
+		
 		String email = etEmail.getText().toString();
 		String subject = etSubject.getText().toString();
 		String body = etBody.getText().toString();
 
 		if (idFromIntent != 0) {
 			ShareYourPhotoApplication.getDataSource().updateContact(
-					idFromIntent, photoArray, email, subject, body);
+					idFromIntent, getByteArrayFromImageButton(), email, subject, body);
 		} else {
 			long id = ShareYourPhotoApplication.getDataSource().addContact(
-					photoArray, email, subject, body);
+					getByteArrayFromImageButton(), email, subject, body);
 		}
 	}
 	
+	private byte[] getByteArrayFromImageButton() {
+		Bitmap image = ((BitmapDrawable) btnAddPhoto.getDrawable()).getBitmap();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		image.compress(Bitmap.CompressFormat.PNG, 0, bos);
+		byte[] photoArray = bos.toByteArray();
+		return photoArray;
+	}
+	
 	private void openEmailClient() {
+		
 		Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 		String email = etEmail.getText().toString();
 		String[] emailArray = new String[]{email};
@@ -212,10 +235,14 @@ public class ShareActivity extends ActionBarActivity {
 		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, emailArray);
 		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, etSubject.getText().toString());
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, etBody.getText().toString());
-		startActivity(Intent.createChooser(emailIntent, "Send email..."));
+		Log.e("----------------", "open Email Client PhotoPath: " + photoFilePath);
+		// Doesn't work for savedPictures
+		emailIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.fromFile(new File(photoFilePath)));
+		startActivityForResult(Intent.createChooser(emailIntent, "Send email..."), REQUEST_EMAIL_RETURN);
 	}
 
 	private void takePhotoByCamera() {
+		
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		// Ensure that there's a camera activity to handle the intent
 		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -240,19 +267,24 @@ public class ShareActivity extends ActionBarActivity {
 	}
 
 	private File createImageFile() throws IOException {
+		
 		// Create an image file name
 		String timeStamp = new SimpleDateFormat("yyMMdd_HHmmss")
 				.format(new Date());
 		String imageFile = "JPEG_" + timeStamp + "_";
 		File storageDir = Environment
 				.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-		File image = File.createTempFile(imageFile, ".jpg", storageDir);
+//		File image = File.createTempFile(imageFile, ".jpg", storageDir);
+		File image = new File(storageDir, imageFile + ".jpg");
+		image.createNewFile();
 		// Save a file: path for use with ACTION_VIEW intents
+		photoFilePath = image.getAbsolutePath();
 		currentPhotoPath = "file:" + image.getAbsolutePath();
 		return image;
 	}
 
 	private void takePhotoFromGallery() {
+		
 		Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
 		galleryIntent.setType("image/*");
 		startActivityForResult(
@@ -261,9 +293,10 @@ public class ShareActivity extends ActionBarActivity {
 	}
 
 	private void setPic() {
+		
 		// Get the dimensions of the View
-		int targetWidth = btnAddPhoto.getWidth();
-		int targetHeight = btnAddPhoto.getHeight();
+		int targetWidth = (int) getResources().getDimension(R.dimen.iv_add_photo_width);
+		int targetHeight = (int) getResources().getDimension(R.dimen.iv_add_photo_height);
 
 		Log.e("--------------", "target " + targetHeight + " " + targetWidth);
 
@@ -288,12 +321,15 @@ public class ShareActivity extends ActionBarActivity {
 	}
 
 	private String getPath(Uri uri) {
+		
 		String[] projection = { MediaStore.Images.Media.DATA };
 		Cursor cursor = this.getContentResolver().query(uri, projection, null,
 				null, null);
 		int columnIndex = cursor
 				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		cursor.moveToFirst();
-		return cursor.getString(columnIndex);
+		String path = cursor.getString(columnIndex);
+		cursor.close();
+		return path;
 	}
 }

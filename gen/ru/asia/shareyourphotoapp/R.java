@@ -991,6 +991,7 @@ containing a value of this type.
          (the screen is in portrait). This may be either a fraction or a dimension.
          */
         public static final int dialog_fixed_width_minor=0x7f080012;
+        public static final int et_body_height=0x7f080021;
         public static final int iv_add_photo_height=0x7f080020;
         public static final int iv_add_photo_width=0x7f08001f;
         public static final int iv_item_photo_height=0x7f08001e;
@@ -1001,8 +1002,8 @@ containing a value of this type.
         public static final int margin_top=0x7f080017;
         public static final int tv_item_address=0x7f08001b;
         public static final int tv_item_subject=0x7f08001c;
-        public static final int tv_message=0x7f080022;
-        public static final int tv_share=0x7f080021;
+        public static final int tv_message=0x7f080023;
+        public static final int tv_share=0x7f080022;
     }
     public static final class drawable {
         public static final int abc_ab_bottom_solid_dark_holo=0x7f020000;

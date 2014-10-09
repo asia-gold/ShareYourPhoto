@@ -150,6 +150,7 @@ int dimen dialog_fixed_height_major 0x7f080013
 int dimen dialog_fixed_height_minor 0x7f080014
 int dimen dialog_fixed_width_major 0x7f080011
 int dimen dialog_fixed_width_minor 0x7f080012
+int dimen et_body_height 0x7f080021
 int dimen iv_add_photo_height 0x7f080020
 int dimen iv_add_photo_width 0x7f08001f
 int dimen iv_item_photo_height 0x7f08001e
@@ -160,8 +161,8 @@ int dimen margin_right 0x7f080019
 int dimen margin_top 0x7f080017
 int dimen tv_item_address 0x7f08001b
 int dimen tv_item_subject 0x7f08001c
-int dimen tv_message 0x7f080022
-int dimen tv_share 0x7f080021
+int dimen tv_message 0x7f080023
+int dimen tv_share 0x7f080022
 int drawable abc_ab_bottom_solid_dark_holo 0x7f020000
 int drawable abc_ab_bottom_solid_light_holo 0x7f020001
 int drawable abc_ab_bottom_transparent_dark_holo 0x7f020002
