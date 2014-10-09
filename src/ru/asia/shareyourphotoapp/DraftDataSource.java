@@ -44,6 +44,19 @@ public class DraftDataSource {
 		return insertID;
 	}
 	
+	public void updateContact(long id, byte[] photo, String email, String subject, String body) {
+		ContentValues values = new ContentValues();
+		values.put(DraftDBHelper.COLUMN_PHOTO, photo);
+		values.put(DraftDBHelper.COLUMN_EMAIL, email);
+		values.put(DraftDBHelper.COLUMN_SUBJECT, subject);
+		values.put(DraftDBHelper.COLUMN_BODY, body);
+		String whereClause = null;
+		if (id != 0) {
+			 whereClause = DraftDBHelper.COLUMN_ID + " = " + id;
+		}
+		database.update(DraftDBHelper.TABLE_NAME, values, whereClause, null);
+	}
+	
 	public Draft getDraft(long id) {
 		Draft draft = null;
 		Cursor cursor = database.query(DraftDBHelper.TABLE_NAME, allColumns,

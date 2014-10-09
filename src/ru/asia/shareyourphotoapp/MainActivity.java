@@ -95,6 +95,8 @@ public class MainActivity extends ActionBarActivity {
 					@Override
 					public void onClick(View view) {						
 						ShareYourPhotoApplication.getDataSource().deleteDraft(deleteDraft);
+						adapter.notifyDataSetChanged();
+						removeItemDialog.dismiss();
 					}
 				});
 
@@ -131,6 +133,8 @@ public class MainActivity extends ActionBarActivity {
 					@Override
 					public void onClick(View view) {
 						ShareYourPhotoApplication.getDataSource().deleteAllDrafts();
+						adapter.notifyDataSetChanged();
+						removeAllDialog.dismiss();
 					}
 				});
 
@@ -141,7 +145,7 @@ public class MainActivity extends ActionBarActivity {
 	
 	@Override
 	protected void onResume() {
-		data = ShareYourPhotoApplication.getDataSource().getAllDrafts();
+		adapter.notifyDataSetChanged();
 		super.onResume();
 	}
 
