@@ -5,6 +5,7 @@ public class Draft {
 	
 	long id;
 	byte[] photo;
+	String photoPath;
 	String email;
 	String subject;
 	String body;
@@ -18,6 +19,10 @@ public class Draft {
 	
 	public void setPhoto(byte[] photo) {
 		this.photo = photo;
+	}
+	
+	public void setPhotoPath(String photoPath) {
+		this.photoPath = photoPath;
 	}
 	
 	public void setEmail(String email) {
@@ -38,6 +43,10 @@ public class Draft {
 	
 	public byte[] getPhoto() {
 		return photo;
+	}
+	
+	public String getPhotoPath() {
+		return photoPath;
 	}
 	
 	public String getEmail() {

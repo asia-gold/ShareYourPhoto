@@ -175,12 +175,13 @@ public class ShareActivity extends ActionBarActivity {
 		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_CAPTURE
 				&& currentPhotoPath != null) {
 			setPic();
+			setPhotoPath(currentPhotoPath);
 			currentPhotoPath = null;
 		}
 		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_SELECT) {
 			Uri selectedImageUri = data.getData();
 			currentPhotoPath = getPath(selectedImageUri);
-			photoFilePath = currentPhotoPath;
+			setPhotoPath(currentPhotoPath);
 			Log.e("----------------", "onActivityResult getPath: " + getPath(selectedImageUri));
 			setPic();
 		}
@@ -190,6 +191,10 @@ public class ShareActivity extends ActionBarActivity {
 			//finish();
 		}
 	}
+	
+	private void setPhotoPath(String path) {
+		photoFilePath = path;
+	}
 
 	private void fillData() {
 		
@@ -198,6 +203,7 @@ public class ShareActivity extends ActionBarActivity {
 		byte[] photoArray = editDraft.getPhoto();
 		btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(
 				photoArray, 0, photoArray.length));
+		photoFilePath = editDraft.getPhotoPath();
 		etEmail.setText(editDraft.getEmail());
 		etSubject.setText(editDraft.getSubject());
 		etBody.setText(editDraft.getBody());
@@ -211,10 +217,10 @@ public class ShareActivity extends ActionBarActivity {
 
 		if (idFromIntent != 0) {
 			ShareYourPhotoApplication.getDataSource().updateContact(
-					idFromIntent, getByteArrayFromImageButton(), email, subject, body);
+					idFromIntent, getByteArrayFromImageButton(), photoFilePath, email, subject, body);
 		} else {
 			long id = ShareYourPhotoApplication.getDataSource().addContact(
-					getByteArrayFromImageButton(), email, subject, body);
+					getByteArrayFromImageButton(), photoFilePath, email, subject, body);
 		}
 	}
 	

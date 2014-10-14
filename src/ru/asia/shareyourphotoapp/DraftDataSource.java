@@ -15,8 +15,9 @@ public class DraftDataSource {
 	private SQLiteDatabase database;
 	private DraftDBHelper dbHelper;
 	private String[] allColumns = { DraftDBHelper.COLUMN_ID,
-			DraftDBHelper.COLUMN_PHOTO, DraftDBHelper.COLUMN_EMAIL,
-			DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
+			DraftDBHelper.COLUMN_PHOTO, DraftDBHelper.COLUMN_PHOTO_PATH, 
+			DraftDBHelper.COLUMN_EMAIL, DraftDBHelper.COLUMN_SUBJECT, 
+			DraftDBHelper.COLUMN_BODY };
 
 	public DraftDataSource(Context context) {
 		dbHelper = new DraftDBHelper(context);
@@ -31,10 +32,11 @@ public class DraftDataSource {
 	}
 
 	// Return id of new data row
-	public long addContact(byte[] photo, String email, String subject,
+	public long addContact(byte[] photo, String photoPath, String email, String subject,
 			String body) {
 		ContentValues values = new ContentValues();
 		values.put(DraftDBHelper.COLUMN_PHOTO, photo);
+		values.put(DraftDBHelper.COLUMN_PHOTO_PATH, photoPath);
 		values.put(DraftDBHelper.COLUMN_EMAIL, email);
 		values.put(DraftDBHelper.COLUMN_SUBJECT, subject);
 		values.put(DraftDBHelper.COLUMN_BODY, body);
@@ -44,9 +46,10 @@ public class DraftDataSource {
 		return insertID;
 	}
 	
-	public void updateContact(long id, byte[] photo, String email, String subject, String body) {
+	public void updateContact(long id, byte[] photo, String photoPath, String email, String subject, String body) {
 		ContentValues values = new ContentValues();
 		values.put(DraftDBHelper.COLUMN_PHOTO, photo);
+		values.put(DraftDBHelper.COLUMN_PHOTO_PATH, photoPath);
 		values.put(DraftDBHelper.COLUMN_EMAIL, email);
 		values.put(DraftDBHelper.COLUMN_SUBJECT, subject);
 		values.put(DraftDBHelper.COLUMN_BODY, body);
@@ -100,9 +103,10 @@ public class DraftDataSource {
 		Draft draft = new Draft();
 		draft.setId(cursor.getLong(0));
 		draft.setPhoto(cursor.getBlob(1));
-		draft.setEmail(cursor.getString(2));
-		draft.setSubject(cursor.getString(3));
-		draft.setBody(cursor.getString(4));
+		draft.setPhotoPath(cursor.getString(2));
+		draft.setEmail(cursor.getString(3));
+		draft.setSubject(cursor.getString(4));
+		draft.setBody(cursor.getString(5));
 		return draft;
 	}
 }

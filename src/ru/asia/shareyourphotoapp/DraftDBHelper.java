@@ -14,14 +14,16 @@ public class DraftDBHelper extends SQLiteOpenHelper{
 	
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_PHOTO = "photo";
+	public static final String COLUMN_PHOTO_PATH = "path";
 	public static final String COLUMN_EMAIL = "email";
 	public static final String COLUMN_SUBJECT = "subject";
 	public static final String COLUMN_BODY = "body";
 	
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_NAME + "(" + COLUMN_ID + " integer primary key autoincrement, "
-			+ COLUMN_PHOTO + " BLOB, " + COLUMN_EMAIL + " text not null, " 
-			+ COLUMN_SUBJECT + " text, " + COLUMN_BODY + " text" + ");";
+			+ COLUMN_PHOTO + " BLOB, " + COLUMN_PHOTO_PATH + " text, "
+			+ COLUMN_EMAIL + " text not null, " + COLUMN_SUBJECT + " text, " 
+			+ COLUMN_BODY + " text" + ");";
 	
 	public DraftDBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATADASE_VERSION);
