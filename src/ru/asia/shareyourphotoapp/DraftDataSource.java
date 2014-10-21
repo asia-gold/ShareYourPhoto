@@ -10,6 +10,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+/**
+ * Work with drafts from database. Add, update, delete and get 
+ * drafts.
+ * 
+ * @author Asia
+ *
+ */
 public class DraftDataSource {
 
 	private SQLiteDatabase database;
@@ -23,15 +30,33 @@ public class DraftDataSource {
 		dbHelper = new DraftDBHelper(context);
 	}
 
+	/**
+	 * Initialize database.
+	 * 
+	 * @throws SQLException
+	 */
 	public void open() throws SQLException {
 		database = dbHelper.getWritableDatabase();
 	}
 
+	/**
+	 * Close open database.
+	 */
 	public void close() {
 		dbHelper.close();
 	}
 
-	// Return id of new data row
+	/**
+	 * Add draft to database.
+	 * 
+	 * Draft data for adding.
+	 * @param photo
+	 * @param photoPath
+	 * @param email
+	 * @param subject
+	 * @param body
+	 * @return id of new data row.
+	 */
 	public long addContact(byte[] photo, String photoPath, String email, String subject,
 			String body) {
 		ContentValues values = new ContentValues();
@@ -46,6 +71,18 @@ public class DraftDataSource {
 		return insertID;
 	}
 	
+	/**
+	 * Update draft specified by id argument.
+	 * 
+	 * @param id	- id of draft
+	 * 
+	 * Draft data for updating.
+	 * @param photo
+	 * @param photoPath
+	 * @param email
+	 * @param subject
+	 * @param body
+	 */
 	public void updateContact(long id, byte[] photo, String photoPath, String email, String subject, String body) {
 		ContentValues values = new ContentValues();
 		values.put(DraftDBHelper.COLUMN_PHOTO, photo);
@@ -60,6 +97,12 @@ public class DraftDataSource {
 		database.update(DraftDBHelper.TABLE_NAME, values, whereClause, null);
 	}
 	
+	/**
+	 * Get draft from database using id argument.
+	 * 
+	 * @param id	- id of draft.
+	 * @return draft.
+	 */
 	public Draft getDraft(long id) {
 		Draft draft = null;
 		Cursor cursor = database.query(DraftDBHelper.TABLE_NAME, allColumns,
@@ -71,6 +114,11 @@ public class DraftDataSource {
 		return draft;
 	}
 	
+	/**
+	 * Get all drafts from database.
+	 * 
+	 * @return ArrayList of drafts.
+	 */
 	public ArrayList<Draft> getAllDrafts() {
 		ArrayList<Draft> drafts = new ArrayList<Draft>();
 
@@ -87,6 +135,11 @@ public class DraftDataSource {
 		return drafts;
 	}
 	
+	/**
+	 * Delete draft specified by draft argument.
+	 * 
+	 * @param draft - draft for deleting.
+	 */
 	public void deleteDraft(Draft draft) {
 		long id = draft.getId();
 		Log.e("----------------", "deleted with id: " + id);
@@ -94,11 +147,20 @@ public class DraftDataSource {
 				+ " = " + id, null);
 	}
 	
+	/**
+	 * Delete all drafts.
+	 */
 	public void deleteAllDrafts() {
 		Log.e("----------------", "delete all");
 		database.delete(DraftDBHelper.TABLE_NAME, null, null);
 	}
 	
+	/**
+	 * Get data from cursor and set data to draft.
+	 * 
+	 * @param cursor
+	 * @return draft with data from cursor.
+	 */
 	private Draft cursorToDraft(Cursor cursor) {
 		Draft draft = new Draft();
 		draft.setId(cursor.getLong(0));

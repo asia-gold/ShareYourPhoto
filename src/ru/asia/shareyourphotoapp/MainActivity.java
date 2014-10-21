@@ -72,35 +72,7 @@ public class MainActivity extends ActionBarActivity {
 					int position, long id) {
 				
 				deleteDraft = (Draft) lvDrafts.getAdapter().getItem(position);
-				
-				final Dialog removeItemDialog = new Dialog(context, R.style.CustomDialogTheme);
-				removeItemDialog.setContentView(R.layout.remove_dialog);
-				TextView tvMessage = (TextView) removeItemDialog
-						.findViewById(R.id.tvMessege);
-				Button btnNo = (Button) removeItemDialog.findViewById(R.id.btnNo);
-				Button btnYes = (Button) removeItemDialog.findViewById(R.id.btnYes);
-
-				tvMessage.setText(getResources().getString(
-						R.string.remove_dialog));				
-
-				btnNo.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						removeItemDialog.dismiss();
-					}
-				});
-
-				btnYes.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View view) {						
-						ShareYourPhotoApplication.getDataSource().deleteDraft(deleteDraft);
-						adapter.notifyDataSetChanged();
-						removeItemDialog.dismiss();
-					}
-				});
-
-				removeItemDialog.show();
+				showRemoveItemDialog();				
 				return false;
 			}
 			
@@ -110,37 +82,77 @@ public class MainActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View view) {
-				// custom dialog
-				final Dialog removeAllDialog = new Dialog(context, R.style.CustomDialogTheme);
-				removeAllDialog.setContentView(R.layout.remove_dialog);
-				TextView tvMessage = (TextView) removeAllDialog
-						.findViewById(R.id.tvMessege);
-				Button btnNo = (Button) removeAllDialog.findViewById(R.id.btnNo);
-				Button btnYes = (Button) removeAllDialog.findViewById(R.id.btnYes);
-
-				tvMessage.setText(getResources().getString(
-						R.string.remove_all_dialog));
-
-				btnNo.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						removeAllDialog.dismiss();
-					}
-				});
-
-				btnYes.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View view) {
-						ShareYourPhotoApplication.getDataSource().deleteAllDrafts();
-						adapter.notifyDataSetChanged();
-						removeAllDialog.dismiss();
-					}
-				});
-
-				removeAllDialog.show();
+				showRemoveAllDialog();				
 			}
 		});
+	}
+	
+	/**
+	 * Show dialog to remove selected draft.
+	 */
+	private void showRemoveItemDialog() {
+		final Dialog removeItemDialog = new Dialog(context, R.style.CustomDialogTheme);
+		removeItemDialog.setContentView(R.layout.remove_dialog);
+		TextView tvMessage = (TextView) removeItemDialog
+				.findViewById(R.id.tvMessege);
+		Button btnNo = (Button) removeItemDialog.findViewById(R.id.btnNo);
+		Button btnYes = (Button) removeItemDialog.findViewById(R.id.btnYes);
+
+		tvMessage.setText(getResources().getString(
+				R.string.remove_dialog));				
+
+		btnNo.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				removeItemDialog.dismiss();
+			}
+		});
+
+		btnYes.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View view) {						
+				ShareYourPhotoApplication.getDataSource().deleteDraft(deleteDraft);
+				adapter.notifyDataSetChanged();
+				removeItemDialog.dismiss();
+			}
+		});
+
+		removeItemDialog.show();
+	}
+	
+	/**
+	 * Show dialog to remove all data. 
+	 */
+	private void showRemoveAllDialog(){
+		final Dialog removeAllDialog = new Dialog(context, R.style.CustomDialogTheme);
+		removeAllDialog.setContentView(R.layout.remove_dialog);
+		TextView tvMessage = (TextView) removeAllDialog
+				.findViewById(R.id.tvMessege);
+		Button btnNo = (Button) removeAllDialog.findViewById(R.id.btnNo);
+		Button btnYes = (Button) removeAllDialog.findViewById(R.id.btnYes);
+
+		tvMessage.setText(getResources().getString(
+				R.string.remove_all_dialog));
+
+		btnNo.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				removeAllDialog.dismiss();
+			}
+		});
+
+		btnYes.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View view) {
+				ShareYourPhotoApplication.getDataSource().deleteAllDrafts();
+				adapter.notifyDataSetChanged();
+				removeAllDialog.dismiss();
+			}
+		});
+
+		removeAllDialog.show();
 	}
 	
 	@Override

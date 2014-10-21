@@ -5,13 +5,28 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+/**
+ * Manage contacts database creation and version changing.
+ * 
+ * @author Asia
+ *
+ */
 public class DraftDBHelper extends SQLiteOpenHelper{
 	
+	/**
+	 * Database name and version.
+	 */
 	private static final String DATABASE_NAME = "shareyourphoto.db";
 	private static final int DATADASE_VERSION = 1;
 	
+	/**
+	 * Table name.
+	 */
 	public static final String TABLE_NAME = "drafts";
 	
+	/**
+	 * Columns names.
+	 */
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_PHOTO = "photo";
 	public static final String COLUMN_PHOTO_PATH = "path";
@@ -19,6 +34,9 @@ public class DraftDBHelper extends SQLiteOpenHelper{
 	public static final String COLUMN_SUBJECT = "subject";
 	public static final String COLUMN_BODY = "body";
 	
+	/**
+	 * Database creation SQL statement.
+	 */
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_NAME + "(" + COLUMN_ID + " integer primary key autoincrement, "
 			+ COLUMN_PHOTO + " BLOB, " + COLUMN_PHOTO_PATH + " text, "
