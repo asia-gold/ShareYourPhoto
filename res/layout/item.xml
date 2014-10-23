@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/screen_color"
+    android:background="@drawable/list_item_effects"
     android:orientation="horizontal" >
 
     <LinearLayout
@@ -17,14 +17,14 @@
             android:layout_height="wrap_content"
             android:text="@string/str_address"
             android:textSize="@dimen/tv_item_address"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/str_subject"
             android:textSize="@dimen/tv_item_subject"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <LinearLayout
@@ -44,7 +44,7 @@
             android:scrollHorizontally="true"
             android:text="@string/str_address"
             android:textSize="@dimen/tv_item_address"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
 
         <TextView
             android:id="@+id/tvItemSubject"
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="@string/str_subject"
             android:textSize="@dimen/tv_item_subject"
-            android:textColor="@color/white" />
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <ImageView

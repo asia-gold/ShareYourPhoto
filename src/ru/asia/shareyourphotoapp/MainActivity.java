@@ -2,15 +2,12 @@ package ru.asia.shareyourphotoapp;
 
 import java.util.ArrayList;
 
+import ru.asia.shareyourphotoapp.dialogs.RemoveAllDialogFragment;
+import ru.asia.shareyourphotoapp.dialogs.RemoveItemDialogFragment;
 import ru.asia.shareyourphotoapp.model.Draft;
-import android.app.Dialog;
-import android.app.LoaderManager.LoaderCallbacks;
+import android.app.DialogFragment;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -23,9 +20,13 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
+/**
+ * Activity allows User to review drafts or sent messages.
+ * 
+ * @author Asia
+ *
+ */
 public class MainActivity extends ActionBarActivity {
 
 	private Context context = this;
@@ -33,9 +34,9 @@ public class MainActivity extends ActionBarActivity {
 	private Button btnRemoveAll;
 	private ArrayList<Draft> data;
 	private DraftsAdapter adapter;
-	
+
 	Draft deleteDraft;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,7 +44,7 @@ public class MainActivity extends ActionBarActivity {
 
 		lvDrafts = (ListView) findViewById(R.id.lvDrafts);
 		btnRemoveAll = (Button) findViewById(R.id.btnRemoveAll);
-		
+
 		data = ShareYourPhotoApplication.getDataSource().getAllDrafts();
 		adapter = new DraftsAdapter(this, data);
 
@@ -57,113 +58,126 @@ public class MainActivity extends ActionBarActivity {
 				Draft draft = (Draft) lvDrafts.getAdapter().getItem(position);
 				long itemId = draft.getId();
 				Log.e("-------", "item id " + itemId);
-				
+
 				Intent intent = new Intent(MainActivity.this,
 						ShareActivity.class);
 				intent.putExtra("idDraft", itemId);
 				startActivity(intent);
 			}
 		});
-		
+
 		lvDrafts.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
-			public boolean onItemLongClick(AdapterView<?>parent, View view,
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
+
 				deleteDraft = (Draft) lvDrafts.getAdapter().getItem(position);
-				showRemoveItemDialog();				
+				showRemoveItemDialog();
 				return false;
 			}
-			
+
 		});
 
 		btnRemoveAll.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
-				showRemoveAllDialog();				
+				showRemoveAllDialog();
 			}
 		});
 	}
-	
+
 	/**
 	 * Show dialog to remove selected draft.
 	 */
 	private void showRemoveItemDialog() {
-		final Dialog removeItemDialog = new Dialog(context, R.style.CustomDialogTheme);
-		removeItemDialog.setContentView(R.layout.remove_dialog);
-		TextView tvMessage = (TextView) removeItemDialog
-				.findViewById(R.id.tvMessege);
-		Button btnNo = (Button) removeItemDialog.findViewById(R.id.btnNo);
-		Button btnYes = (Button) removeItemDialog.findViewById(R.id.btnYes);
-
-		tvMessage.setText(getResources().getString(
-				R.string.remove_dialog));				
-
-		btnNo.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				removeItemDialog.dismiss();
-			}
-		});
-
-		btnYes.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View view) {						
-				ShareYourPhotoApplication.getDataSource().deleteDraft(deleteDraft);
-				adapter.notifyDataSetChanged();
-				removeItemDialog.dismiss();
-			}
-		});
-
-		removeItemDialog.show();
+		
+		RemoveItemDialogFragment removeItemDialog = new RemoveItemDialogFragment(deleteDraft);
+		removeItemDialog.show(getFragmentManager(), "dialog");
+//		final Dialog removeItemDialog = new Dialog(context,
+//				R.style.CustomDialogTheme);
+//		removeItemDialog.setContentView(R.layout.remove_dialog);
+//		TextView tvMessage = (TextView) removeItemDialog
+//				.findViewById(R.id.tvMessege);
+//		Button btnNo = (Button) removeItemDialog.findViewById(R.id.btnNo);
+//		Button btnYes = (Button) removeItemDialog.findViewById(R.id.btnYes);
+//
+//		tvMessage.setText(getResources().getString(R.string.remove_dialog));
+//
+//		btnNo.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View view) {
+//				removeItemDialog.dismiss();
+//			}
+//		});
+//
+//		btnYes.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View view) {
+//				ShareYourPhotoApplication.getDataSource().deleteDraft(
+//						deleteDraft);
+//				adapter.notifyDataSetChanged();
+//				removeItemDialog.dismiss();
+//			}
+//		});
+//
+//		removeItemDialog.show();
 	}
-	
+
 	/**
-	 * Show dialog to remove all data. 
+	 * Show dialog to remove all data.
 	 */
-	private void showRemoveAllDialog(){
-		final Dialog removeAllDialog = new Dialog(context, R.style.CustomDialogTheme);
-		removeAllDialog.setContentView(R.layout.remove_dialog);
-		TextView tvMessage = (TextView) removeAllDialog
-				.findViewById(R.id.tvMessege);
-		Button btnNo = (Button) removeAllDialog.findViewById(R.id.btnNo);
-		Button btnYes = (Button) removeAllDialog.findViewById(R.id.btnYes);
+	private void showRemoveAllDialog() {
 
-		tvMessage.setText(getResources().getString(
-				R.string.remove_all_dialog));
-
-		btnNo.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				removeAllDialog.dismiss();
-			}
-		});
-
-		btnYes.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View view) {
-				ShareYourPhotoApplication.getDataSource().deleteAllDrafts();
-				adapter.notifyDataSetChanged();
-				removeAllDialog.dismiss();
-			}
-		});
-
-		removeAllDialog.show();
+		RemoveAllDialogFragment removeAllDialog = new RemoveAllDialogFragment();
+		//removeAllDialog.setStyle(DialogFragment.STYLE_NO_TITLE, R.style.CustomDialogTheme);
+		removeAllDialog.show(getFragmentManager(), "dialog");
+		
+		// final Dialog removeAllDialog = new Dialog(context,
+		// R.style.CustomDialogTheme);
+		// removeAllDialog.setContentView(R.layout.remove_dialog);
+		// TextView tvMessage = (TextView) removeAllDialog
+		// .findViewById(R.id.tvMessege);
+		// Button btnNo = (Button) removeAllDialog.findViewById(R.id.btnNo);
+		// Button btnYes = (Button) removeAllDialog.findViewById(R.id.btnYes);
+		//
+		// tvMessage.setText(getResources().getString(
+		// R.string.remove_all_dialog));
+		//
+		// btnNo.setOnClickListener(new OnClickListener() {
+		// @Override
+		// public void onClick(View view) {
+		// removeAllDialog.dismiss();
+		// }
+		// });
+		//
+		// btnYes.setOnClickListener(new OnClickListener() {
+		//
+		// @Override
+		// public void onClick(View view) {
+		// ShareYourPhotoApplication.getDataSource().deleteAllDrafts();
+		// adapter.notifyDataSetChanged();
+		// removeAllDialog.dismiss();
+		// }
+		// });
+		//
+		// removeAllDialog.show();
 	}
-	
+
 	@Override
 	protected void onResume() {
-		adapter.notifyDataSetChanged();
+		updateData();
 		super.onResume();
+	}
+	
+	public void updateData() {
+		adapter.notifyDataSetChanged();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
@@ -180,36 +194,36 @@ public class MainActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-//	private void fillListView() {
-//		String[] from = new String[] { DraftDBHelper.COLUMN_EMAIL,
-//				DraftDBHelper.COLUMN_SUBJECT };
-//		int[] to = new int[] { R.id.tvItemAddress, R.id.tvItemSubject };
-//
-//		getLoaderManager().initLoader(0, null, new LoaderCallbacks<Cursor>() {
-//
-//			@Override
-//			public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-//				String[] projection = { DraftDBHelper.COLUMN_ID,
-//						DraftDBHelper.COLUMN_EMAIL,
-//						DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
-//				CursorLoader cursorLoader = new CursorLoader(MainActivity.this,
-//						DraftsProvider.CONTENT_URI, projection, null, null,
-//						null);
-//				return cursorLoader;
-//			}
-//
-//			@Override
-//			public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//				adapter.swapCursor(data);
-//			}
-//
-//			@Override
-//			public void onLoaderReset(Loader<Cursor> loader) {
-//				adapter.swapCursor(null);
-//			}
-//		});
-//
-//		adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to,
-//				0);
-//	}
+	// private void fillListView() {
+	// String[] from = new String[] { DraftDBHelper.COLUMN_EMAIL,
+	// DraftDBHelper.COLUMN_SUBJECT };
+	// int[] to = new int[] { R.id.tvItemAddress, R.id.tvItemSubject };
+	//
+	// getLoaderManager().initLoader(0, null, new LoaderCallbacks<Cursor>() {
+	//
+	// @Override
+	// public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+	// String[] projection = { DraftDBHelper.COLUMN_ID,
+	// DraftDBHelper.COLUMN_EMAIL,
+	// DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
+	// CursorLoader cursorLoader = new CursorLoader(MainActivity.this,
+	// DraftsProvider.CONTENT_URI, projection, null, null,
+	// null);
+	// return cursorLoader;
+	// }
+	//
+	// @Override
+	// public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+	// adapter.swapCursor(data);
+	// }
+	//
+	// @Override
+	// public void onLoaderReset(Loader<Cursor> loader) {
+	// adapter.swapCursor(null);
+	// }
+	// });
+	//
+	// adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to,
+	// 0);
+	// }
 }

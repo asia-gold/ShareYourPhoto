@@ -3,8 +3,8 @@
 
     <string name="app_name">ShareYourPhotoApp</string>
     
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_share">ShareActivity</string>
+    <string name="title_activity_main">Drafts and Sent Messages</string>
+    <string name="title_activity_share">Share</string>
     
     <string name="str_address">Address:</string>
     <string name="str_subject">Subject:</string>
@@ -19,8 +19,8 @@
     
     <string name="no_email">Please, fill the Email field.</string>
     
-    <string name="btn_yes">Yes</string>
-    <string name="btn_no">No</string>
+    <string name="str_yes">Yes</string>
+    <string name="str_no">No</string>
     
     <string name="remove_dialog">Are you sure you want to remove this message?</string>
     <string name="remove_all_dialog">Are you sure you want to remove all messages?</string>

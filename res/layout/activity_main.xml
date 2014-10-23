@@ -3,18 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/screen_color"
     tools:context="ru.asia.shareyourphotoapp.MainActivity" >
 
     <ListView
         android:id="@+id/lvDrafts"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/listview_height"
+        android:choiceMode="singleChoice"
         android:layout_weight="1"/>
     
     <Button 
         android:id="@+id/btnRemoveAll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btnRemoveAll"/>
+        android:layout_marginLeft="@dimen/margin_left_btn_remove_all"
+        android:layout_marginTop="@dimen/margin_top_btn_remove_all"
+        android:layout_marginRight="@dimen/margin_right_btn_remove_all"
+        android:layout_marginBottom="@dimen/margin_bottom_btn_remove_all"
+        android:text="@string/btnRemoveAll"
+        android:textColor="@color/text_color"
+        android:background="@drawable/remove_all_effects"/>
 
 </LinearLayout>

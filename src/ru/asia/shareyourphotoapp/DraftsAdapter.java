@@ -13,6 +13,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * Custom adapter for ListView. Inflate custom item layout.
+ * 
+ * @author Asia
+ *
+ */
 public class DraftsAdapter extends BaseAdapter {
 	
 	private Activity draftsActivity;
@@ -27,6 +33,7 @@ public class DraftsAdapter extends BaseAdapter {
 	
 	@Override
 	public void notifyDataSetChanged() {
+		draftsList.clear();
 		draftsList = ShareYourPhotoApplication.getDataSource().getAllDrafts();
 		super.notifyDataSetChanged();
 	}

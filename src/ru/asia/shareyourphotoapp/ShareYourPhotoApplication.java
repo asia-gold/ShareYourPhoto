@@ -19,9 +19,4 @@ public class ShareYourPhotoApplication extends Application {
 		return dataSource;
 	}
 
-	@Override
-	public void onTerminate() {
-		dataSource.close();
-		super.onTerminate();
-	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="screen_color">#35414c</color>
-    <color name="white">#ffffff</color>
-    <color name="black">#000000</color>
+    <color name="selected_color">#54626e</color>
+    <color name="text_color">#ffffff</color>
     
 </resources>

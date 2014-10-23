@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.crypto.spec.IvParameterSpec;
-
 import ru.asia.shareyourphotoapp.model.Draft;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,18 +31,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class ShareActivity extends ActionBarActivity {
 
 	private static final int REQUEST_IMAGE_CAPTURE = 1;
-	private static final int REQUEST_IMAGE_SELECT = 2;
-	
+	private static final int REQUEST_IMAGE_SELECT = 2;	
 	private static final int REQUEST_EMAIL_RETURN = 3;
 
 	private Context context = this;
-	private ImageButton btnAddPhoto;
+	private ImageView btnAddPhoto;
 	private EditText etEmail;
 	private EditText etSubject;
 	private EditText etBody;
@@ -60,7 +59,7 @@ public class ShareActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
 
-		btnAddPhoto = (ImageButton) findViewById(R.id.btnAddPhoto);
+		btnAddPhoto = (ImageView) findViewById(R.id.btnAddPhoto);
 		etEmail = (EditText) findViewById(R.id.etEmail);
 		etSubject = (EditText) findViewById(R.id.etSubject);
 		etBody = (EditText) findViewById(R.id.etBody);

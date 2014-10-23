@@ -9,6 +9,13 @@
     <dimen name="margin_right">5dp</dimen>
     <dimen name="margin_bottom">10dp</dimen>
     
+    <dimen name="margin_top_btn_remove_all">20dp</dimen>
+    <dimen name="margin_left_btn_remove_all">10dp</dimen>
+    <dimen name="margin_right_btn_remove_all">10dp</dimen>
+    <dimen name="margin_bottom_btn_remove_all">15dp</dimen>
+    
+    <dimen name="listview_height">0dp</dimen>
+    
     <dimen name="tv_item_address">18sp</dimen>
     <dimen name="tv_item_subject">16sp</dimen>
     
