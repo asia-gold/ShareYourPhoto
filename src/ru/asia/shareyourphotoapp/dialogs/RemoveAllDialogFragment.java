@@ -10,6 +10,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 
+/**
+ * Build and show dialog for removing all drafts.
+ * 
+ * @author Asia
+ *
+ */
 public class RemoveAllDialogFragment extends DialogFragment{
 
 	@Override

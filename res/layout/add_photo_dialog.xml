@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="260dp"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin_add_photo_dialog"
     android:orientation="vertical" >
     
     <Button 
         android:id="@+id/btnCamera"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_camera"/>
+        android:text="@string/btn_camera"
+        android:textColor="@color/text_color"
+        android:background="@drawable/add_photo_dialog_buttons_effects"/>
     
     <Button 
         android:id="@+id/btnGallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_gallery"/>
+        android:layout_marginTop="@dimen/margin_top_between_add_photo_dialog"
+        android:text="@string/btn_gallery"
+        android:textColor="@color/text_color"
+        android:background="@drawable/add_photo_dialog_buttons_effects"/>
     
     <Button 
         android:id="@+id/btnCancel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_cancel"/>
+        android:layout_marginTop="@dimen/margin_top_between_add_photo_dialog"
+        android:text="@string/btn_cancel"
+        android:textColor="@color/text_color"
+        android:background="@drawable/add_photo_dialog_buttons_effects"/>
     
 
 </LinearLayout>

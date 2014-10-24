@@ -29,7 +29,7 @@ import android.widget.ListView;
  */
 public class MainActivity extends ActionBarActivity {
 
-	private Context context = this;
+	//private Context context = this;
 	private ListView lvDrafts;
 	private Button btnRemoveAll;
 	private ArrayList<Draft> data;
@@ -91,79 +91,17 @@ public class MainActivity extends ActionBarActivity {
 	/**
 	 * Show dialog to remove selected draft.
 	 */
-	private void showRemoveItemDialog() {
-		
+	private void showRemoveItemDialog() {		
 		RemoveItemDialogFragment removeItemDialog = new RemoveItemDialogFragment(deleteDraft);
 		removeItemDialog.show(getFragmentManager(), "dialog");
-//		final Dialog removeItemDialog = new Dialog(context,
-//				R.style.CustomDialogTheme);
-//		removeItemDialog.setContentView(R.layout.remove_dialog);
-//		TextView tvMessage = (TextView) removeItemDialog
-//				.findViewById(R.id.tvMessege);
-//		Button btnNo = (Button) removeItemDialog.findViewById(R.id.btnNo);
-//		Button btnYes = (Button) removeItemDialog.findViewById(R.id.btnYes);
-//
-//		tvMessage.setText(getResources().getString(R.string.remove_dialog));
-//
-//		btnNo.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View view) {
-//				removeItemDialog.dismiss();
-//			}
-//		});
-//
-//		btnYes.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View view) {
-//				ShareYourPhotoApplication.getDataSource().deleteDraft(
-//						deleteDraft);
-//				adapter.notifyDataSetChanged();
-//				removeItemDialog.dismiss();
-//			}
-//		});
-//
-//		removeItemDialog.show();
 	}
 
 	/**
 	 * Show dialog to remove all data.
 	 */
 	private void showRemoveAllDialog() {
-
 		RemoveAllDialogFragment removeAllDialog = new RemoveAllDialogFragment();
-		//removeAllDialog.setStyle(DialogFragment.STYLE_NO_TITLE, R.style.CustomDialogTheme);
 		removeAllDialog.show(getFragmentManager(), "dialog");
-		
-		// final Dialog removeAllDialog = new Dialog(context,
-		// R.style.CustomDialogTheme);
-		// removeAllDialog.setContentView(R.layout.remove_dialog);
-		// TextView tvMessage = (TextView) removeAllDialog
-		// .findViewById(R.id.tvMessege);
-		// Button btnNo = (Button) removeAllDialog.findViewById(R.id.btnNo);
-		// Button btnYes = (Button) removeAllDialog.findViewById(R.id.btnYes);
-		//
-		// tvMessage.setText(getResources().getString(
-		// R.string.remove_all_dialog));
-		//
-		// btnNo.setOnClickListener(new OnClickListener() {
-		// @Override
-		// public void onClick(View view) {
-		// removeAllDialog.dismiss();
-		// }
-		// });
-		//
-		// btnYes.setOnClickListener(new OnClickListener() {
-		//
-		// @Override
-		// public void onClick(View view) {
-		// ShareYourPhotoApplication.getDataSource().deleteAllDrafts();
-		// adapter.notifyDataSetChanged();
-		// removeAllDialog.dismiss();
-		// }
-		// });
-		//
-		// removeAllDialog.show();
 	}
 
 	@Override
@@ -193,37 +131,4 @@ public class MainActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	// private void fillListView() {
-	// String[] from = new String[] { DraftDBHelper.COLUMN_EMAIL,
-	// DraftDBHelper.COLUMN_SUBJECT };
-	// int[] to = new int[] { R.id.tvItemAddress, R.id.tvItemSubject };
-	//
-	// getLoaderManager().initLoader(0, null, new LoaderCallbacks<Cursor>() {
-	//
-	// @Override
-	// public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-	// String[] projection = { DraftDBHelper.COLUMN_ID,
-	// DraftDBHelper.COLUMN_EMAIL,
-	// DraftDBHelper.COLUMN_SUBJECT, DraftDBHelper.COLUMN_BODY };
-	// CursorLoader cursorLoader = new CursorLoader(MainActivity.this,
-	// DraftsProvider.CONTENT_URI, projection, null, null,
-	// null);
-	// return cursorLoader;
-	// }
-	//
-	// @Override
-	// public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-	// adapter.swapCursor(data);
-	// }
-	//
-	// @Override
-	// public void onLoaderReset(Loader<Cursor> loader) {
-	// adapter.swapCursor(null);
-	// }
-	// });
-	//
-	// adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to,
-	// 0);
-	// }
 }

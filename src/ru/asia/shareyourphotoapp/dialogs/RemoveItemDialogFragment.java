@@ -11,6 +11,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 
+/**
+ * Build and show dialog for removing selected item.
+ * 
+ * @author Asia
+ *
+ */
 public class RemoveItemDialogFragment extends DialogFragment{
 	
 	Draft deleteDraft;

@@ -7,13 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ru.asia.shareyourphotoapp.model.Draft;
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,10 +33,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+/**
+ * Activity allows User to edit drafts/sent messages or create a new message.
+ * 
+ * @author Asia
+ *
+ */
 public class ShareActivity extends ActionBarActivity {
 
 	private static final int REQUEST_IMAGE_CAPTURE = 1;
-	private static final int REQUEST_IMAGE_SELECT = 2;	
+	private static final int REQUEST_IMAGE_SELECT = 2;
 	private static final int REQUEST_EMAIL_RETURN = 3;
 
 	private Context context = this;
@@ -54,45 +59,27 @@ public class ShareActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
-		Log.e("---------", "onCreate ShareActivity");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		btnAddPhoto = (ImageView) findViewById(R.id.btnAddPhoto);
 		etEmail = (EditText) findViewById(R.id.etEmail);
 		etSubject = (EditText) findViewById(R.id.etSubject);
 		etBody = (EditText) findViewById(R.id.etBody);
 		btnShare = (Button) findViewById(R.id.btnShare);
-		
 
-
-//		SharedPreferences sPref = getSharedPreferences("preference", MODE_PRIVATE);
-//		sentMessage = sPref.getBoolean("sentMessage", false);
-//		Log.e("---------", "sentMessage " + sentMessage);
-//		if (sentMessage) {
-//			SharedPreferences settings = getSharedPreferences("preference",
-//					MODE_PRIVATE);
-//			Editor editor = settings.edit();
-//			editor.putBoolean("sentMessage", false);
-//			editor.commit();
-//			Log.e("---------", "sentMessage " + sentMessage);
-//		} else {
-			if (savedInstanceState == null) {
-				idFromIntent = getIntent().getLongExtra("idDraft", 0);
-
-				if (idFromIntent != 0) {
-					fillData();
-				}
-			} else {
-				byte[] savedPhotoArray = savedInstanceState.getByteArray("btnAddPhoto");
-			
-				btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(savedPhotoArray, 0, savedPhotoArray.length));
-
+		if (savedInstanceState == null) {
+			idFromIntent = getIntent().getLongExtra("idDraft", 0);
+			if (idFromIntent != 0) {
+				fillData();
 			}
-		
-
-		
+		} else {
+			byte[] savedPhotoArray = savedInstanceState
+					.getByteArray("btnAddPhoto");
+			btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(
+					savedPhotoArray, 0, savedPhotoArray.length));
+		}
 
 		btnAddPhoto.setOnClickListener(new OnClickListener() {
 
@@ -106,37 +93,33 @@ public class ShareActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(View view) {
-				// To Default Email Client
-
-				if (TextUtils.isEmpty(etEmail.getText().toString())) {
-					Toast.makeText(ShareActivity.this,
-							getResources().getString(R.string.no_email),
-							Toast.LENGTH_LONG).show();
-				} else {
-					saveData();
-					openEmailClient();
-				}
+				onShareButtonClick();
 			}
 		});
 	}
-	
+
+	/**
+	 * Show dialog when user tap the ImageView to choose photo source.
+	 */
 	private void showAddPhotoDialog() {
 		final Dialog addPhotoDialog = new Dialog(context,
 				R.style.CustomDialogTheme);
 		addPhotoDialog.setContentView(R.layout.add_photo_dialog);
 
-		Button btnCamera = (Button) addPhotoDialog
-				.findViewById(R.id.btnCamera);
+		Button btnCamera = (Button) addPhotoDialog.findViewById(R.id.btnCamera);
 		Button btnGallery = (Button) addPhotoDialog
 				.findViewById(R.id.btnGallery);
-		Button btnCancel = (Button) addPhotoDialog
-				.findViewById(R.id.btnCancel);
+		Button btnCancel = (Button) addPhotoDialog.findViewById(R.id.btnCancel);
 
 		btnCamera.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				takePhotoByCamera();
-				addPhotoDialog.dismiss();
+				if (isCameraAvailable()) {
+					takePhotoByCamera();
+					addPhotoDialog.dismiss();
+				} else {
+					informUser(getResources().getString(R.string.no_camera));
+				}				
 			}
 		});
 
@@ -158,10 +141,22 @@ public class ShareActivity extends ActionBarActivity {
 
 		addPhotoDialog.show();
 	}
-	
+
+	private void onShareButtonClick() {
+		if (TextUtils.isEmpty(etEmail.getText().toString())) {
+			Toast.makeText(ShareActivity.this,
+					getResources().getString(R.string.no_email),
+					Toast.LENGTH_LONG).show();
+		} else {
+			saveData();
+			openEmailClient();
+		}
+	}
+
 	@Override
 	protected void onResume() {
-		SharedPreferences sPref = getSharedPreferences("preference", MODE_PRIVATE);
+		SharedPreferences sPref = getSharedPreferences("preference",
+				MODE_PRIVATE);
 		sentMessage = sPref.getBoolean("sentMessage", false);
 		if (sentMessage) {
 			SharedPreferences settings = getSharedPreferences("preference",
@@ -171,17 +166,18 @@ public class ShareActivity extends ActionBarActivity {
 			editor.commit();
 			Log.e("---------", "sentMessage " + sentMessage);
 			if (idFromIntent == 0) {
-			Log.e("---------", "id == 0");
-			// Everything must be empty
-			btnAddPhoto.setImageDrawable(getResources().getDrawable(R.drawable.camera));
-			etEmail.setText("");
-			etSubject.setText("");
-			etBody.setText("");
+				Log.e("---------", "id == 0");
+				// Everything must be empty
+				btnAddPhoto.setImageDrawable(getResources().getDrawable(
+						R.drawable.camera));
+				etEmail.setText("");
+				etSubject.setText("");
+				etBody.setText("");
 			}
 		}
 		super.onResume();
 	}
-	
+
 	/**
 	 * Set sentMessage preference value to true.
 	 */
@@ -193,29 +189,21 @@ public class ShareActivity extends ActionBarActivity {
 		editor.putBoolean("sentMessage", true);
 		editor.commit();
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putByteArray("btnAddPhoto", getByteArrayFromImageButton());
-//		outState.putString("etEmail", etEmail.getText().toString());
-//		outState.putString("etSubject", etSubject.getText().toString());
-//		outState.putString("etBody", etBody.getText().toString());
-//		
 		super.onSaveInstanceState(outState);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.share, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
 			return true;
@@ -225,58 +213,97 @@ public class ShareActivity extends ActionBarActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_CAPTURE
-				&& currentPhotoPath != null) {
-			setPic();
-			setPhotoPath(currentPhotoPath);
-			currentPhotoPath = null;
+		switch (requestCode) {
+		case REQUEST_IMAGE_CAPTURE:
+			if (resultCode == RESULT_OK && currentPhotoPath != null) {
+				setPic();
+				setPhotoPath(currentPhotoPath);
+				currentPhotoPath = null;
+			}
+			break;
+		case REQUEST_IMAGE_SELECT:
+			if (resultCode == RESULT_OK) {
+				Uri selectedImageUri = data.getData();
+				currentPhotoPath = getPath(selectedImageUri);
+				setPhotoPath(currentPhotoPath);
+				Log.e("----------------", "onActivityResult getPath: "
+						+ getPath(selectedImageUri));
+				setPic();
+			}
+			break;
+		case REQUEST_EMAIL_RETURN:
+			if (resultCode == RESULT_OK) {
+				Log.e("----------------", "onActivityResult ");
+				setSentMessage();
+			}
+			break;
+		default:
+			break;
 		}
-		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_SELECT) {
-			Uri selectedImageUri = data.getData();
-			currentPhotoPath = getPath(selectedImageUri);
-			setPhotoPath(currentPhotoPath);
-			Log.e("----------------", "onActivityResult getPath: " + getPath(selectedImageUri));
-			setPic();
-		}
-		if (requestCode == REQUEST_EMAIL_RETURN) {
-			Log.e("----------------", "onActivityResult ");
-			setSentMessage();
-		}
+
+//		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_CAPTURE
+//				&& currentPhotoPath != null) {
+//			setPic();
+//			setPhotoPath(currentPhotoPath);
+//			currentPhotoPath = null;
+//		}
+//		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_SELECT) {
+//			Uri selectedImageUri = data.getData();
+//			currentPhotoPath = getPath(selectedImageUri);
+//			setPhotoPath(currentPhotoPath);
+//			Log.e("----------------", "onActivityResult getPath: "
+//					+ getPath(selectedImageUri));
+//			setPic();
+//		}
+//		if (requestCode == REQUEST_EMAIL_RETURN) {
+//			Log.e("----------------", "onActivityResult ");
+//			setSentMessage();
+//		}
 	}
-	
+
+	/**
+	 * Set photoFilePath.
+	 * 
+	 * @param path
+	 */
 	private void setPhotoPath(String path) {
 		photoFilePath = path;
 	}
 
+	/**
+	 * Set data to views.
+	 */
 	private void fillData() {
-		
-		Draft editDraft = ShareYourPhotoApplication.getDataSource()
-				.getDraft(idFromIntent);
+		Draft editDraft = ShareYourPhotoApplication.getDataSource().getDraft(
+				idFromIntent);
 		byte[] photoArray = editDraft.getPhoto();
-		btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(
-				photoArray, 0, photoArray.length));
+		btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(photoArray, 0,
+				photoArray.length));
 		photoFilePath = editDraft.getPhotoPath();
 		etEmail.setText(editDraft.getEmail());
 		etSubject.setText(editDraft.getSubject());
 		etBody.setText(editDraft.getBody());
 	}
 
+	/**
+	 * Save draft into database.
+	 */
 	private void saveData() {
-		
 		String email = etEmail.getText().toString();
 		String subject = etSubject.getText().toString();
 		String body = etBody.getText().toString();
 
 		if (idFromIntent != 0) {
 			ShareYourPhotoApplication.getDataSource().updateContact(
-					idFromIntent, getByteArrayFromImageButton(), photoFilePath, email, subject, body);
+					idFromIntent, getByteArrayFromImageButton(), photoFilePath,
+					email, subject, body);
 		} else {
-			long id = ShareYourPhotoApplication.getDataSource().addContact(
-					getByteArrayFromImageButton(), photoFilePath, email, subject, body);
+			ShareYourPhotoApplication.getDataSource().addContact(
+					getByteArrayFromImageButton(), photoFilePath, email,
+					subject, body);
 		}
 	}
-	
+
 	/**
 	 * Get photo from ImageButton and convert it to byte array.
 	 * 
@@ -289,27 +316,49 @@ public class ShareActivity extends ActionBarActivity {
 		byte[] photoArray = bos.toByteArray();
 		return photoArray;
 	}
-	
+
+	/**
+	 * Open mail application. If User filled in text fields, then respective
+	 * fields in the mail application would be filled in with the same information.
+	 * If User added a photo, the selected photo would be attached to the mail message.
+	 */
 	private void openEmailClient() {
-		
 		Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 		String email = etEmail.getText().toString();
-		String[] emailArray = new String[]{email};
+		String[] emailArray = new String[] { email };
 		emailIntent.setType("plain/text");
 		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, emailArray);
-		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, etSubject.getText().toString());
-		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, etBody.getText().toString());
-		Log.e("----------------", "open Email Client PhotoPath: " + photoFilePath);
-		// Doesn't work for savedPictures
-		emailIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.fromFile(new File(photoFilePath)));
-		startActivityForResult(Intent.createChooser(emailIntent, "Send email..."), REQUEST_EMAIL_RETURN);
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, etSubject
+				.getText().toString());
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, etBody
+				.getText().toString());
+		Log.e("----------------", "open Email Client PhotoPath: "
+				+ photoFilePath);
+		if (photoFilePath != null) {
+			emailIntent.putExtra(android.content.Intent.EXTRA_STREAM,
+					Uri.fromFile(new File(photoFilePath)));
+
+		} else {
+			informUser(getResources().getString(R.string.no_photo));
+		}
+		startActivityForResult(
+				Intent.createChooser(emailIntent, "Send email..."),
+				REQUEST_EMAIL_RETURN);
 	}
-	
+
+	/**
+	 * Show toast to inform user. 
+	 * 
+	 * @param message
+	 */
+	private void informUser(String message) {
+		Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+	}
+
 	/**
 	 * Start new Activity to capture a photo.
 	 */
 	private void takePhotoByCamera() {
-		
 		Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 		// Ensure that there's a camera activity to handle the intent
 		if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -340,14 +389,13 @@ public class ShareActivity extends ActionBarActivity {
 	 * @throws IOException
 	 */
 	private File createImageFile() throws IOException {
-		
 		// Create an image file name
 		String timeStamp = new SimpleDateFormat("yyMMdd_HHmmss")
 				.format(new Date());
 		String imageFile = "JPEG_" + timeStamp + "_";
-		File storageDir = Environment
-				.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-//		File image = File.createTempFile(imageFile, ".jpg", storageDir);
+		File storageDir = context
+				.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+		// File image = File.createTempFile(imageFile, ".jpg", storageDir);
 		File image = new File(storageDir, imageFile + ".jpg");
 		image.createNewFile();
 		// Save a file: path for use with ACTION_VIEW intents
@@ -360,7 +408,6 @@ public class ShareActivity extends ActionBarActivity {
 	 * Start new Activity to choose photo from gallery.
 	 */
 	private void takePhotoFromGallery() {
-		
 		Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
 		galleryIntent.setType("image/*");
 		startActivityForResult(
@@ -372,10 +419,11 @@ public class ShareActivity extends ActionBarActivity {
 	 * Scale photo to match the size of the destination ImageView.
 	 */
 	private void setPic() {
-		
 		// Get the dimensions of the View
-		int targetWidth = (int) getResources().getDimension(R.dimen.iv_add_photo_width);
-		int targetHeight = (int) getResources().getDimension(R.dimen.iv_add_photo_height);
+		int targetWidth = (int) getResources().getDimension(
+				R.dimen.iv_add_photo_width);
+		int targetHeight = (int) getResources().getDimension(
+				R.dimen.iv_add_photo_height);
 
 		Log.e("--------------", "target " + targetHeight + " " + targetWidth);
 
@@ -398,7 +446,7 @@ public class ShareActivity extends ActionBarActivity {
 		Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bfOptions);
 		btnAddPhoto.setImageBitmap(bitmap);
 	}
-	
+
 	/**
 	 * Get String path of image from Content Provider of gallery using uri.
 	 * 
@@ -406,7 +454,6 @@ public class ShareActivity extends ActionBarActivity {
 	 * @return String path of image
 	 */
 	private String getPath(Uri uri) {
-		
 		String[] projection = { MediaStore.Images.Media.DATA };
 		Cursor cursor = this.getContentResolver().query(uri, projection, null,
 				null, null);
@@ -416,5 +463,17 @@ public class ShareActivity extends ActionBarActivity {
 		String path = cursor.getString(columnIndex);
 		cursor.close();
 		return path;
+	}
+	
+	/**
+	 * Check camera available.
+	 * 
+	 * @return          <code>true</code> if device has camera.
+	 */
+	private boolean isCameraAvailable() {
+		final PackageManager packageManager = getPackageManager();
+		boolean isCamera = packageManager
+				.hasSystemFeature(PackageManager.FEATURE_CAMERA);
+		return isCamera;
 	}
 }

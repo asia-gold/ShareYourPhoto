@@ -18,6 +18,8 @@
     <string name="action_add_new_message">Add new message</string>
     
     <string name="no_email">Please, fill the Email field.</string>
+    <string name="no_photo">You don\'t set photo.</string>
+    <string name="no_camera">You have no camera on device.</string>
     
     <string name="str_yes">Yes</string>
     <string name="str_no">No</string>
