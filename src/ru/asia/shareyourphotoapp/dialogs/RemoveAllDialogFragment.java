@@ -7,8 +7,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnShowListener;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
+import android.widget.Button;
 
 /**
  * Build and show dialog for removing all drafts.
@@ -42,6 +46,34 @@ public class RemoveAllDialogFragment extends DialogFragment{
 										.cancel();
 							}
 						});
-		return builder.create();
+		Dialog dialog = builder.create();
+		dialog.setOnShowListener(new OnShowListener() {
+
+			@Override
+			public void onShow(DialogInterface dialog) {
+				Button noButton = ((AlertDialog) dialog)
+						.getButton(DialogInterface.BUTTON_NEGATIVE);
+				Button yesButton = ((AlertDialog) dialog)
+						.getButton(DialogInterface.BUTTON_POSITIVE);
+
+				final Drawable noButtonDrawable = getResources()
+						.getDrawable(R.drawable.btn_negative_effects);
+				final Drawable yesButtonDrawable = getResources()
+						.getDrawable(R.drawable.btn_positive_effects);
+				if (Build.VERSION.SDK_INT >= 16) {
+					noButton.setBackground(noButtonDrawable);
+					yesButton.setBackground(yesButtonDrawable);
+				} else {
+					noButton
+							.setBackgroundDrawable(noButtonDrawable);
+					yesButton
+							.setBackgroundDrawable(yesButtonDrawable);
+				}
+
+				noButton.invalidate();
+				yesButton.invalidate();
+			}
+		});
+		return dialog;
 	}
 }

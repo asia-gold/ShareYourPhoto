@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import ru.asia.shareyourphotoapp.dialogs.RemoveAllDialogFragment;
 import ru.asia.shareyourphotoapp.dialogs.RemoveItemDialogFragment;
 import ru.asia.shareyourphotoapp.model.Draft;
-import android.app.DialogFragment;
-import android.content.Context;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -110,6 +109,9 @@ public class MainActivity extends ActionBarActivity {
 		super.onResume();
 	}
 	
+	/**
+	 * Update data in adapter.
+	 */
 	public void updateData() {
 		adapter.notifyDataSetChanged();
 	}

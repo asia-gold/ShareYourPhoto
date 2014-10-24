@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ru.asia.shareyourphotoapp.dialogs.SaveDialogFragment;
 import ru.asia.shareyourphotoapp.model.Draft;
 import android.app.Dialog;
 import android.content.Context;
@@ -17,6 +18,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -61,7 +63,7 @@ public class ShareActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_share);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
 		btnAddPhoto = (ImageView) findViewById(R.id.btnAddPhoto);
 		etEmail = (EditText) findViewById(R.id.etEmail);
@@ -177,6 +179,24 @@ public class ShareActivity extends ActionBarActivity {
 		}
 		super.onResume();
 	}
+	
+	@Override
+	public void onBackPressed() {
+		if (isEmailEmpty()) {
+			finish();
+		} else {
+			SaveDialogFragment saveDialog = new SaveDialogFragment();
+			saveDialog.show(getFragmentManager(), "saveDialog");
+		}		
+	}
+	
+	private boolean isEmailEmpty() {
+		if (TextUtils.isEmpty(etEmail.getText().toString())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/**
 	 * Set sentMessage preference value to true.
@@ -240,25 +260,6 @@ public class ShareActivity extends ActionBarActivity {
 		default:
 			break;
 		}
-
-//		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_CAPTURE
-//				&& currentPhotoPath != null) {
-//			setPic();
-//			setPhotoPath(currentPhotoPath);
-//			currentPhotoPath = null;
-//		}
-//		if (resultCode == RESULT_OK && requestCode == REQUEST_IMAGE_SELECT) {
-//			Uri selectedImageUri = data.getData();
-//			currentPhotoPath = getPath(selectedImageUri);
-//			setPhotoPath(currentPhotoPath);
-//			Log.e("----------------", "onActivityResult getPath: "
-//					+ getPath(selectedImageUri));
-//			setPic();
-//		}
-//		if (requestCode == REQUEST_EMAIL_RETURN) {
-//			Log.e("----------------", "onActivityResult ");
-//			setSentMessage();
-//		}
 	}
 
 	/**
@@ -288,7 +289,7 @@ public class ShareActivity extends ActionBarActivity {
 	/**
 	 * Save draft into database.
 	 */
-	private void saveData() {
+	public void saveData() {
 		String email = etEmail.getText().toString();
 		String subject = etSubject.getText().toString();
 		String body = etBody.getText().toString();

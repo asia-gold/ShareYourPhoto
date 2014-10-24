@@ -53,6 +53,12 @@ public class DraftsAdapter extends BaseAdapter {
 		return position;
 	}
 	
+	/**
+	 * Hold references to the views in item layout.
+	 * 
+	 * @author Asia
+	 *
+	 */
 	static class ViewHolder {
 		public TextView tvItemAddress;
 		public TextView tvItemSubject;

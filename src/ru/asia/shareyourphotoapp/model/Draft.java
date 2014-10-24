@@ -1,6 +1,11 @@
 package ru.asia.shareyourphotoapp.model;
 
-
+/**
+ * Model of draft.
+ * 
+ * @author Asia
+ *
+ */
 public class Draft {
 	
 	long id;
@@ -12,6 +17,10 @@ public class Draft {
 	
 	public Draft() {
 	}
+	
+	/*
+	 * Set Methods
+	 */
 	
 	public void setId(long id) {
 		this.id = id;
@@ -36,6 +45,10 @@ public class Draft {
 	public void setBody(String body) {
 		this.body = body;
 	}
+	
+	/*
+	 * Get Methods
+	 */
 	
 	public long getId() {
 		return id;
