@@ -56,16 +56,10 @@ public class SaveDialogFragment extends DialogFragment {
 						.getDrawable(R.drawable.btn_negative_effects);
 				final Drawable saveButtonDrawable = getResources()
 						.getDrawable(R.drawable.btn_positive_effects);
-				if (Build.VERSION.SDK_INT >= 16) {
-					cancelButton.setBackground(cancelButtonDrawable);
-					saveButton.setBackground(saveButtonDrawable);
-				} else {
 					cancelButton
 							.setBackgroundDrawable(cancelButtonDrawable);
 					saveButton
 							.setBackgroundDrawable(saveButtonDrawable);
-				}
-
 				cancelButton.invalidate();
 				saveButton.invalidate();
 			}

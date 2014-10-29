@@ -60,16 +60,10 @@ public class RemoveAllDialogFragment extends DialogFragment{
 						.getDrawable(R.drawable.btn_negative_effects);
 				final Drawable yesButtonDrawable = getResources()
 						.getDrawable(R.drawable.btn_positive_effects);
-				if (Build.VERSION.SDK_INT >= 16) {
-					noButton.setBackground(noButtonDrawable);
-					yesButton.setBackground(yesButtonDrawable);
-				} else {
 					noButton
 							.setBackgroundDrawable(noButtonDrawable);
 					yesButton
 							.setBackgroundDrawable(yesButtonDrawable);
-				}
-
 				noButton.invalidate();
 				yesButton.invalidate();
 			}

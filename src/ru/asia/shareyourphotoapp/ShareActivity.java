@@ -17,8 +17,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,8 +27,6 @@ import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -121,7 +120,7 @@ public class ShareActivity extends ActionBarActivity {
 					addPhotoDialog.dismiss();
 				} else {
 					informUser(getResources().getString(R.string.no_camera));
-				}				
+				}
 			}
 		});
 
@@ -179,7 +178,7 @@ public class ShareActivity extends ActionBarActivity {
 		}
 		super.onResume();
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		if (isEmailEmpty()) {
@@ -187,9 +186,9 @@ public class ShareActivity extends ActionBarActivity {
 		} else {
 			SaveDialogFragment saveDialog = new SaveDialogFragment();
 			saveDialog.show(getFragmentManager(), "saveDialog");
-		}		
+		}
 	}
-	
+
 	private boolean isEmailEmpty() {
 		if (TextUtils.isEmpty(etEmail.getText().toString())) {
 			return true;
@@ -216,27 +215,55 @@ public class ShareActivity extends ActionBarActivity {
 		super.onSaveInstanceState(outState);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.share, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+	// @Override
+	// public boolean onCreateOptionsMenu(Menu menu) {
+	// getMenuInflater().inflate(R.menu.share, menu);
+	// return true;
+	// }
+	//
+	// @Override
+	// public boolean onOptionsItemSelected(MenuItem item) {
+	// int id = item.getItemId();
+	// if (id == R.id.action_settings) {
+	// return true;
+	// }
+	// return super.onOptionsItemSelected(item);
+	// }
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
 		case REQUEST_IMAGE_CAPTURE:
 			if (resultCode == RESULT_OK && currentPhotoPath != null) {
-				setPic();
+
+				try {
+					ExifInterface exifData = new ExifInterface(currentPhotoPath);
+					int orientation = exifData.getAttributeInt(
+							ExifInterface.TAG_ORIENTATION,
+							ExifInterface.ORIENTATION_NORMAL);
+					if (orientation == ExifInterface.ORIENTATION_NORMAL) {
+						setPic();
+					} else {
+						Bitmap bitmap = ((BitmapDrawable) btnAddPhoto
+								.getDrawable()).getBitmap();
+						float angle = 0;
+						switch (orientation) {
+						case ExifInterface.ORIENTATION_ROTATE_90:
+							angle = 90;
+							break;
+						case ExifInterface.ORIENTATION_ROTATE_180:
+							angle = 180;
+							break;
+						case ExifInterface.ORIENTATION_ROTATE_270:
+							angle = 270;
+							break;
+						}
+						Bitmap rotatedBitmap = rotateBitmap(bitmap, angle);
+						setPic(rotatedBitmap);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				setPhotoPath(currentPhotoPath);
 				currentPhotoPath = null;
 			}
@@ -260,6 +287,20 @@ public class ShareActivity extends ActionBarActivity {
 		default:
 			break;
 		}
+	}
+
+	/**
+	 * Rotate image, if camera are landscape.
+	 * 
+	 * @param source
+	 * @param angle
+	 * @return rotated Bitmap
+	 */
+	private static Bitmap rotateBitmap(Bitmap source, float angle) {
+		Matrix matrix = new Matrix();
+		matrix.postRotate(angle);
+		return Bitmap.createBitmap(source, 0, 0, source.getWidth(),
+				source.getHeight(), matrix, true);
 	}
 
 	/**
@@ -320,8 +361,9 @@ public class ShareActivity extends ActionBarActivity {
 
 	/**
 	 * Open mail application. If User filled in text fields, then respective
-	 * fields in the mail application would be filled in with the same information.
-	 * If User added a photo, the selected photo would be attached to the mail message.
+	 * fields in the mail application would be filled in with the same
+	 * information. If User added a photo, the selected photo would be attached
+	 * to the mail message.
 	 */
 	private void openEmailClient() {
 		Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -348,7 +390,7 @@ public class ShareActivity extends ActionBarActivity {
 	}
 
 	/**
-	 * Show toast to inform user. 
+	 * Show toast to inform user.
 	 * 
 	 * @param message
 	 */
@@ -417,9 +459,26 @@ public class ShareActivity extends ActionBarActivity {
 	}
 
 	/**
-	 * Scale photo to match the size of the destination ImageView.
+	 * 
 	 */
 	private void setPic() {
+		BitmapFactory.Options bfOptions = getBitmapOptions();
+		Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bfOptions);
+		btnAddPhoto.setImageBitmap(bitmap);
+	}
+	
+	private void setPic(Bitmap sourceBitmap) {
+		BitmapFactory.Options bfOptions = getBitmapOptions();
+		Bitmap bitmap = Bitmap.createScaledBitmap(sourceBitmap, bfOptions.outWidth, bfOptions.outHeight, true);
+		btnAddPhoto.setImageBitmap(bitmap);
+	}
+
+	/**
+	 * Scale photo to match the size of the destination ImageView.
+	 * 
+	 * @return BitmapFactory.Options
+	 */
+	private BitmapFactory.Options getBitmapOptions() {
 		// Get the dimensions of the View
 		int targetWidth = (int) getResources().getDimension(
 				R.dimen.iv_add_photo_width);
@@ -443,9 +502,7 @@ public class ShareActivity extends ActionBarActivity {
 		bfOptions.inJustDecodeBounds = false;
 		bfOptions.inSampleSize = scaleFactor;
 		bfOptions.inPurgeable = true;
-
-		Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bfOptions);
-		btnAddPhoto.setImageBitmap(bitmap);
+		return bfOptions;
 	}
 
 	/**
@@ -465,11 +522,11 @@ public class ShareActivity extends ActionBarActivity {
 		cursor.close();
 		return path;
 	}
-	
+
 	/**
 	 * Check camera available.
 	 * 
-	 * @return          <code>true</code> if device has camera.
+	 * @return <code>true</code> if device has camera.
 	 */
 	private boolean isCameraAvailable() {
 		final PackageManager packageManager = getPackageManager();
