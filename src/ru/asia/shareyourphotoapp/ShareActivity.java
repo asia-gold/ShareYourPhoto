@@ -80,6 +80,7 @@ public class ShareActivity extends ActionBarActivity {
 					.getByteArray("btnAddPhoto");
 			btnAddPhoto.setImageBitmap(BitmapFactory.decodeByteArray(
 					savedPhotoArray, 0, savedPhotoArray.length));
+			currentPhotoPath = savedInstanceState.getString("currentPhotoPath");
 		}
 
 		btnAddPhoto.setOnClickListener(new OnClickListener() {
@@ -212,6 +213,7 @@ public class ShareActivity extends ActionBarActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putByteArray("btnAddPhoto", getByteArrayFromImageButton());
+		outState.putString("currentPhotoPath", currentPhotoPath);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -241,6 +243,7 @@ public class ShareActivity extends ActionBarActivity {
 					int orientation = exifData.getAttributeInt(
 							ExifInterface.TAG_ORIENTATION,
 							ExifInterface.ORIENTATION_NORMAL);
+					Log.e("ShareActivity", "Orientation: " + orientation);
 					if (orientation == ExifInterface.ORIENTATION_NORMAL) {
 						setPic();
 					} else {
@@ -264,6 +267,7 @@ public class ShareActivity extends ActionBarActivity {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				Log.e("ShareActivity", "Current Photo Path: " + currentPhotoPath);
 				setPhotoPath(currentPhotoPath);
 				currentPhotoPath = null;
 			}
@@ -442,7 +446,6 @@ public class ShareActivity extends ActionBarActivity {
 		File image = new File(storageDir, imageFile + ".jpg");
 		image.createNewFile();
 		// Save a file: path for use with ACTION_VIEW intents
-		photoFilePath = image.getAbsolutePath();
 		currentPhotoPath = "file:" + image.getAbsolutePath();
 		return image;
 	}
