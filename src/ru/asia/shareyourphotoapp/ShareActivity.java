@@ -459,7 +459,7 @@ public class ShareActivity extends ActionBarActivity {
 	}
 
 	/**
-	 * 
+	 * Set picture to ImageView.
 	 */
 	private void setPic() {
 		BitmapFactory.Options bfOptions = getBitmapOptions();
@@ -467,6 +467,11 @@ public class ShareActivity extends ActionBarActivity {
 		btnAddPhoto.setImageBitmap(bitmap);
 	}
 	
+	/**
+	 * Set picture to ImageView.
+	 * 
+	 * @param sourceBitmap
+	 */
 	private void setPic(Bitmap sourceBitmap) {
 		BitmapFactory.Options bfOptions = getBitmapOptions();
 		Bitmap bitmap = Bitmap.createScaledBitmap(sourceBitmap, bfOptions.outWidth, bfOptions.outHeight, true);
