@@ -8,7 +8,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 /**
  * Work with drafts from database. Add, update, delete and get 
@@ -32,10 +31,8 @@ public class DraftDataSource {
 
 	/**
 	 * Initialize database.
-	 * 
-	 * @throws SQLException
 	 */
-	public void open() throws SQLException {
+	public void open() {
 		database = dbHelper.getWritableDatabase();
 	}
 
@@ -67,7 +64,6 @@ public class DraftDataSource {
 		values.put(DraftDBHelper.COLUMN_BODY, body);
 		long insertID = database.insert(DraftDBHelper.TABLE_NAME, null,
 				values);
-		Log.e("---------------", "id create = " + insertID);
 		return insertID;
 	}
 	
@@ -142,7 +138,6 @@ public class DraftDataSource {
 	 */
 	public void deleteDraft(Draft draft) {
 		long id = draft.getId();
-		Log.e("----------------", "deleted with id: " + id);
 		database.delete(DraftDBHelper.TABLE_NAME, DraftDBHelper.COLUMN_ID
 				+ " = " + id, null);
 	}
@@ -151,7 +146,6 @@ public class DraftDataSource {
 	 * Delete all drafts.
 	 */
 	public void deleteAllDrafts() {
-		Log.e("----------------", "delete all");
 		database.delete(DraftDBHelper.TABLE_NAME, null, null);
 	}
 	

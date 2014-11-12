@@ -1,7 +1,6 @@
 package ru.asia.shareyourphotoapp;
 
 import android.app.Application;
-import android.util.Log;
 
 public class ShareYourPhotoApplication extends Application {
 
@@ -12,7 +11,6 @@ public class ShareYourPhotoApplication extends Application {
 		super.onCreate();
 		dataSource = new DraftDataSource(this);
 		dataSource.open();
-		Log.e("MyApp", "DataSource initialize");
 	}
 
 	public static DraftDataSource getDataSource() {

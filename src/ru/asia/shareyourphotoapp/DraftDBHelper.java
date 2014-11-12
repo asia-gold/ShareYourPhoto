@@ -3,7 +3,6 @@ package ru.asia.shareyourphotoapp;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * Manage contacts database creation and version changing.
@@ -49,8 +48,7 @@ public class DraftDBHelper extends SQLiteOpenHelper{
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL(DATABASE_CREATE);
-		Log.e("-------------------", "DB created");		
+		db.execSQL(DATABASE_CREATE);		
 	}
 
 	@Override

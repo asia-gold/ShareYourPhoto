@@ -21,8 +21,8 @@
             android:layout_width="@dimen/iv_add_photo_width"
             android:layout_height="@dimen/iv_add_photo_height"
             android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:src="@drawable/camera" />
+            android:src="@drawable/camera" 
+            android:background="@color/selected_color"/>
 
         <TextView
             android:layout_width="wrap_content"

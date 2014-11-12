@@ -26,7 +26,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -166,9 +165,7 @@ public class ShareActivity extends ActionBarActivity {
 			Editor editor = settings.edit();
 			editor.putBoolean("sentMessage", false);
 			editor.commit();
-			Log.e("---------", "sentMessage " + sentMessage);
 			if (idFromIntent == 0) {
-				Log.e("---------", "id == 0");
 				// Everything must be empty
 				btnAddPhoto.setImageDrawable(getResources().getDrawable(
 						R.drawable.camera));
@@ -243,12 +240,11 @@ public class ShareActivity extends ActionBarActivity {
 					int orientation = exifData.getAttributeInt(
 							ExifInterface.TAG_ORIENTATION,
 							ExifInterface.ORIENTATION_NORMAL);
-					Log.e("ShareActivity", "Orientation: " + orientation);
 					if (orientation == ExifInterface.ORIENTATION_NORMAL) {
 						setPic();
 					} else {
-						Bitmap bitmap = ((BitmapDrawable) btnAddPhoto
-								.getDrawable()).getBitmap();
+						BitmapFactory.Options bfOptions = getBitmapOptions();
+						Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bfOptions);
 						float angle = 0;
 						switch (orientation) {
 						case ExifInterface.ORIENTATION_ROTATE_90:
@@ -267,7 +263,6 @@ public class ShareActivity extends ActionBarActivity {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				Log.e("ShareActivity", "Current Photo Path: " + currentPhotoPath);
 				setPhotoPath(currentPhotoPath);
 				currentPhotoPath = null;
 			}
@@ -277,16 +272,11 @@ public class ShareActivity extends ActionBarActivity {
 				Uri selectedImageUri = data.getData();
 				currentPhotoPath = getPath(selectedImageUri);
 				setPhotoPath(currentPhotoPath);
-				Log.e("----------------", "onActivityResult getPath: "
-						+ getPath(selectedImageUri));
 				setPic();
 			}
 			break;
 		case REQUEST_EMAIL_RETURN:
-			if (resultCode == RESULT_OK) {
-				Log.e("----------------", "onActivityResult ");
 				setSentMessage();
-			}
 			break;
 		default:
 			break;
@@ -379,8 +369,6 @@ public class ShareActivity extends ActionBarActivity {
 				.getText().toString());
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, etBody
 				.getText().toString());
-		Log.e("----------------", "open Email Client PhotoPath: "
-				+ photoFilePath);
 		if (photoFilePath != null) {
 			emailIntent.putExtra(android.content.Intent.EXTRA_STREAM,
 					Uri.fromFile(new File(photoFilePath)));
@@ -476,9 +464,7 @@ public class ShareActivity extends ActionBarActivity {
 	 * @param sourceBitmap
 	 */
 	private void setPic(Bitmap sourceBitmap) {
-		BitmapFactory.Options bfOptions = getBitmapOptions();
-		Bitmap bitmap = Bitmap.createScaledBitmap(sourceBitmap, bfOptions.outWidth, bfOptions.outHeight, true);
-		btnAddPhoto.setImageBitmap(bitmap);
+		btnAddPhoto.setImageBitmap(sourceBitmap);
 	}
 
 	/**
@@ -492,8 +478,6 @@ public class ShareActivity extends ActionBarActivity {
 				R.dimen.iv_add_photo_width);
 		int targetHeight = (int) getResources().getDimension(
 				R.dimen.iv_add_photo_height);
-
-		Log.e("--------------", "target " + targetHeight + " " + targetWidth);
 
 		// Get the dimension of the bitmap
 		BitmapFactory.Options bfOptions = new BitmapFactory.Options();

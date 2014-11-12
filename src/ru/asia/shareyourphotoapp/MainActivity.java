@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import ru.asia.shareyourphotoapp.dialogs.RemoveAllDialogFragment;
 import ru.asia.shareyourphotoapp.dialogs.RemoveItemDialogFragment;
 import ru.asia.shareyourphotoapp.model.Draft;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,7 +54,6 @@ public class MainActivity extends ActionBarActivity {
 
 				Draft draft = (Draft) lvDrafts.getAdapter().getItem(position);
 				long itemId = draft.getId();
-				Log.e("-------", "item id " + itemId);
 
 				Intent intent = new Intent(MainActivity.this,
 						ShareActivity.class);

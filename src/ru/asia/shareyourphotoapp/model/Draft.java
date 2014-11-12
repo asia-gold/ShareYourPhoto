@@ -8,11 +8,29 @@ package ru.asia.shareyourphotoapp.model;
  */
 public class Draft {
 	
+	/**
+	 * Draft id.
+	 */
 	long id;
+	/**
+	 * Byte array representation of Draft photo.
+	 */
 	byte[] photo;
+	/**
+	 * Path to Draft photo.
+	 */
 	String photoPath;
+	/**
+	 * Draft email.
+	 */
 	String email;
+	/**
+	 * Draft subject.
+	 */
 	String subject;
+	/**
+	 * Draft body.
+	 */
 	String body;
 	
 	public Draft() {
